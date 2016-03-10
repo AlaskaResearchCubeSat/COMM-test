@@ -1,0 +1,9 @@
+#crossworks backup files
+*.bak
+*.hzs
+
+#build directories
+* Debug/
+* Release/
+
+
