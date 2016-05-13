@@ -4,8 +4,7 @@
 //Code for prototype Communication System for the Alaska Research CubeSat (ARC) as developed by the Alaska Space Grant Program
 //Samuel Vanderwaal, APril 2012
 
-#define CS_1101 BIT4 //BIT5 on Engineering board BIT4 on dev board daughter board!!!
-#define CS_2500 BIT5 //BIT4 on Engineering board BIT5 on dev board daughter board!!!
+
 #define CS_TEMP1 BIT6
 #define CS_TEMP2 BIT7
 
@@ -21,14 +20,28 @@
 #define TX_END       3
 #define RX_START     4
 #define RX_RUNNING   5
-#define CC1101_GDO0  BIT0  
-#define CC1101_GDO2  BIT1  //BIT2 on Engineering board BIT1 on dev board daughter board!!!
-#define CC2500_GDO0  BIT2  //BIT3 on Engineering board BIT2 on dev board daughter board!!!
-#define CC2500_GDO2  BIT3  //BIT4 on Engineering board BIT3 on dev board daughter board!!!
+
+#ifndef DEV_BUILD
+  //defines for COM board build
+  #define CS_1101 BIT4  //BIT5 on Engineering board BIT4 on dev board daughter board!!!
+  #define CS_2500 BIT5 //BIT4 on Engineering board BIT5 on dev board daughter board!!!
+  #define CC1101_GDO0  BIT0  
+  #define CC1101_GDO2  BIT1  //BIT2 on Engineering board BIT1 on dev board daughter board!!!
+  #define CC2500_GDO0  BIT2  //BIT3 on Engineering board BIT2 on dev board daughter board!!!
+  #define CC2500_GDO2  BIT3  //BIT4 on Engineering board BIT3 on dev board daughter board!!!
+#else
+  //defines for DEV board build
+  #define CS_1101 BIT4 //BIT5 on Engineering board BIT4 on dev board daughter board!!!
+  #define CS_2500 BIT5 //BIT4 on Engineering board BIT5 on dev board daughter board!!!
+  #define CC1101_GDO0  BIT0  
+  #define CC1101_GDO2  BIT1  //BIT2 on Engineering board BIT1 on dev board daughter board!!!
+  #define CC2500_GDO0  BIT2  //BIT3 on Engineering board BIT2 on dev board daughter board!!!
+  #define CC2500_GDO2  BIT3  //BIT4 on Engineering board BIT3 on dev board daughter board!!!
+#endif
 #define RF_SW1       BIT0
 #define RF_SW2       BIT1
 
-enum{CC1101=0, CC2500};
+enum{CC1101=0, CC2500=1};
 //Create event flags for the radios
 #define TxThrBytes 30   
 #define RxThrBytes 30
@@ -39,7 +52,7 @@ void radio_interrupts(void);
 void Build_Packet(int);
 void TI_CC_Wait(unsigned int);
 void Reset_Radio(char);
-void Radio_Strobe(char, char);
+char Radio_Strobe(char, char);
 void Radio_Write_Registers(char addr, char value, char radio);
 void Radio_Write_Burst_Registers(char,unsigned char *, int, char);
 void Radio_Read_Burst_Registers(char,unsigned char *, int, char);

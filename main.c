@@ -6,14 +6,17 @@
 #include <terminal.h>
 #include "timer.h"
 #include "Radio_functions.h"
+#include "COMM.h"
 
 //task structure for idle task
 CTL_TASK_t idle_task;
 
 CTL_TASK_t terminal_task;
+CTL_TASK_t comm_task;
 
 //stack for task
 unsigned stack1[1+256+1];
+unsigned comm_stack[1+256+1];
 
 //make printf send over UCA1
 int __putchar(int ch){
@@ -68,6 +71,7 @@ void main(void){
   P7OUT=BIT7;
 
   //create tasks
+  ctl_task_run(&comm_task, 50, COMM_events, NULL, "COMM_events", sizeof(comm_stack)/sizeof(comm_stack[0])-2,comm_stack+1,0);
   ctl_task_run(&terminal_task,2,start_term,"COMM Test Program Ready","terminal",sizeof(stack1)/sizeof(stack1[0])-2,stack1+1,0);
   
   // drop to lowest priority to start created tasks running.
@@ -79,6 +83,53 @@ void main(void){
 }
 
 
+
+
+void Port2_ISR (void) __ctl_interrupt[PORT2_VECTOR]
+{
+  unsigned char flags=P2IFG;
+  P2IFG&=~flags;
+   if (flags & CC1101_GDO0) // GDO0 is set up to assert when RX FIFO is greater than FIFO_THR.  This is an RX function only
+    {
+        P2IFG &= ~CC1101_GDO0;
+        ctl_events_set_clear(&COMM_evt,CC1101_EV_RX_READ,0);
+    } 
+
+    if (flags & CC1101_GDO2) //GDO2 is set up to assert when TX FIFO is above FIFO_THR threshold.  
+                             //Interrups on falling edge, i.e. when TX FIFO falls below FIFO_THR
+    {
+        switch(state)
+        {
+            case IDLE:
+                 P2IFG &= ~CC1101_GDO2;
+                 break;
+
+            case TX_START:  //Called on falling edge of GDO2, Tx FIFO < threshold, Radio in TX mode, Packet in progress
+                 state = TX_RUNNING;
+                 P2IFG &= ~CC1101_GDO2;
+                 ctl_events_set_clear(&COMM_evt,CC1101_EV_TX_THR,0);
+                 break;
+            
+            case TX_RUNNING: //Called on falling edge of GDO2, Tx FIFO < threshold, Radio in TX mode, Packet in progress
+                 P2IFG &= ~CC1101_GDO2;
+                 ctl_events_set_clear(&COMM_evt,CC1101_EV_TX_THR,0);
+                 break;
+
+            case TX_END:  //Called on falling edge of GDO2, Tx FIFO < threshold, Radio in TX mode, Last part of packet to transmit
+                 state = IDLE;
+                 P2IFG &= ~CC1101_GDO2;
+                 ctl_events_set_clear(&COMM_evt,CC1101_EV_TX_END,0);
+                 break;
+
+            default:
+              P2IFG &= ~CC1101_GDO2;
+              break;          
+  
+        }
+    }
+
+
+}
 
 //==============[task library error function]==============
 

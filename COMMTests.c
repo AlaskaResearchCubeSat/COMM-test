@@ -11,14 +11,12 @@
 #include <commandLib.h>
 #include <Error.h>
 #include <UCA1_uart.h>
-#include "COMMTests.h"
+#include "COMM.h"
 #include "COMM_errors.h"
 #include "Radio_functions.h"
 
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
 
-COMM_STAT status;
-short beacon_on=0, beacon_flag=0;
 
 //reset a MSP430 on command
 int resetCmd(char **argv,unsigned short argc){
@@ -137,45 +135,6 @@ int busCmd(char *argv[],unsigned short argc){
 
 ///////////////////// RADIO CMDS /////////////////////////////////////
 
-//Turn on COMM TODO 
-int onCmd(char *argv[],unsigned short argc){
-  //output lower four bits COMM address (Ox13) to P7 LED's
-  P7OUT=BIT1|BIT0;
-
-  //Perhaps should set a register here that says we are commanded on.
-  
-  printf("COMM On.  Check LEDs: 0bxxxx0011\r\n");
-}
-
-
-//Turn off COMM TODO
-int offCmd(char *argv[],unsigned short argc){
-   //output lower four bits COMM address (Ox13) to P7 LED's
-  P7OUT=0;
-
-  //Perhaps should set a register here that says we are commanded off.
-  
-  printf("COMM Off.  Check LEDs: 0bxxxx0000\r\n");
-}
-
-//Retreive status COMM TODO
-int statusCmd(char *argv[],unsigned short argc){
-
-  int i;
-   //flash lower four bits COMM address (Ox13) to P7 LED's 10 times
-   P7OUT=BIT1|BIT0;
-   for (i=0;i<10;i++){
-	ctl_timeout_wait(ctl_get_current_time()+102);
-	P7OUT=~(BIT1|BIT0);
-	ctl_timeout_wait(ctl_get_current_time()+102);
-	P7OUT=(BIT1|BIT0);
-   }
-  //Need to send back status through terminal.
-  
-  P7OUT=BIT1|BIT0; //finish present CDH address
-  printf("COMM On.  Check LEDs: flashing 0bxxxx0011 - 0bxxxx1100\r\n");
-}
-
 int writeReg(char **argv,unsigned short argc){
   char radio, regaddr, regdata;
   if(argc>3){
@@ -224,6 +183,35 @@ int readReg(char **argv,unsigned short argc){
   }
   printf("Error : %s requires 2 arguments but %u given\r\n",argv[0],argc);
   return -2;
+}
+
+// parsing the "witch radio cmd" passes back 1 for CC1101/ 0 for CC2500
+char radio_cmd(char *arg){
+char radio;
+    if(!strcmp(arg,"CC1101")){
+      radio = CC1101;
+    } else if(!strcmp(arg,"CC2500")){
+    radio=CC2500;
+    }else{
+      //bad things
+      printf("erorr unknown radio %s\r\n",arg);
+      return -1;
+      }
+return radio;
+}
+
+//who am i... passes back radio name as a string
+char * whoami_cmd(int r){
+  char * radio;
+  if(r==CC1101){
+    radio="CC1101";
+    return radio;
+  }
+  else if(r==CC2500){
+    radio="CC2500";
+    return radio;
+    }
+ return "err";
 }
 
 //checks MSP pins connected to the radio (NOTE only set up for 1 radio (CC1101))
@@ -294,19 +282,202 @@ int beaconCmd(char **argv,unsigned short argc){
   return 0;
 }
 
+int streamCmd(char **argv,unsigned short argc){
+  if(!strcmp(argv[1],"value")){
+    data_mode=TX_DATA_PATTERN;
+    data_seed=atoi(argv[2]);
+  }else if(!strcmp(argv[1],"random")){
+    data_mode=TX_DATA_RANDOM;
+    if(argc==2){
+      data_seed=atoi(argv[2]);
+      if(data_seed==0){
+        data_seed=1;
+      }
+    }else{
+      data_seed=1;
+    }
+  }
+  
+  ctl_events_set_clear(&COMM_evt,CC1101_EV_TX_START,0);
+  
+  printf("Push any key to stop\r\n");
+  getchar(); // waits for any char 
+  
+  Radio_Write_Registers(TI_CCxxx0_PKTCTRL0, 0x00, CC1101);         // Fixed byte mode
+  state = TX_END;
+
+  return 0;
+}
+
+int power_Cmd(char **argv,unsigned short argc){
+  const int power_dbm[8]=             { -30, -20, -15, -10,   0,   5,   7,  10};
+  const unsigned char power_PTABLE[8]={0x12,0x0E,0x1D,0x34,0x60,0x84,0xC8,0xC0};
+  unsigned long input;
+  int idx,i;
+  int pwr;
+  char *end;
+  unsigned char read;
+
+  if(argc>0){
+    input=strtol(argv[1],&end,0);
+    if(*end=='\0' || !strcmp(end,"dBm")){
+      pwr=input;
+    }else{
+      printf("Error : unknown suffix \"%s\" for power \"%s\"\r\n",end,argv[1]);
+      return -1;
+    }
+    for(i=0,idx=0;i<8;i++){
+      //find the power that is closest to desired
+      if(abs(power_dbm[i]-pwr)<abs(power_dbm[idx]-pwr)){
+        idx=i;
+      }
+    }
+    printf("Setting radio to %idBm\r\n",power_dbm[idx]);
+    Radio_Write_Registers(TI_CCxxx0_PATABLE,power_PTABLE[idx],CC1101);
+  }
+  read=Radio_Read_Registers(TI_CCxxx0_PATABLE,CC1101);
+  for(i=0,idx=-1;i<8;i++){
+    if(power_PTABLE[i]==read){
+      idx=i;
+      break;
+    }
+  }
+  if(idx==-1){
+    printf("PTABLE = 0x%02X\r\n",read);
+  }else{
+    printf("PTABLE = %idBm = 0x%02X\r\n",power_dbm[idx],read);
+  }
+  return 0;
+}
+
+//enable or disable the COMM radio amplifier 
+int amp_Cmd(char **argv,unsigned short argc){
+//NOTES MSP switch connection "RF1_SW" on P6.0/A0 
+if(argc>0){
+  if(!strcmp(argv[1],"yes")){
+    // turn on amp 
+    P6OUT|=RF_SW1;  }
+  else if(!strcmp(argv[1],"no")){
+    // turn off amp
+    P6OUT&=~RF_SW1;
+  }
+  else {
+     printf("Enter a valid input 'on' or 'off'\r\n");
+     return 0;
+   }
+}
+printf("The CC1011 raido amp is %s\r\n",(P6OUT&RF_SW1)?"on":"off");
+return 0;
+}
+
+// read radio status 
+int status_Cmd(char **argv,unsigned short argc){
+char status, radio,state,fifo;
+const char *state_str=NULL;
+// read 0x00 --> 0x2E
+  if(argc>=1){
+    radio=radio_cmd(argv[1]);
+    if(radio==-1){
+      return -1;
+    }
+  }
+   status=Radio_Strobe(TI_CCxxx0_SNOP, radio);
+   state=status&((BIT6|BIT5|BIT4))>>4;
+   fifo=status&0xF;
+  // read status from byte
+  switch(state){
+        case 0:
+          state_str="IDLE";
+          break;
+        case 1:
+          state_str="RX";
+          break;
+        case 2:
+          state_str="TX";
+          break;
+        case 3:
+          state_str="FSTXON";
+          break;
+        case 4:
+          state_str="CALIBRATE";
+          break;
+        case 5:
+          state_str="SETTLING";
+          break;
+        case 6:
+          state_str="REFIFO_OVERFLOW";
+          break;
+        case 7:
+          state_str="TXFIFO_UNDERFLOW";
+          break;
+          }
+  printf("The status of the %s is %s\r\n",whoami_cmd(radio),state_str);
+  printf("The fifo has %i bytes\r\n",fifo);
+  printf("The chip is %s\r\n",status&BIT7?"not ready":"ready");
+return 0;
+}
+
+//turn off auto gain cmd
+//TODO
+int AGC_Cmd(char **argv,unsigned short argc){
+  unsigned char AGC;
+  AGC=Radio_Read_Registers(TI_CCxxx0_AGCTEST,CC1101);
+  printf("The AGC test reg is %hhi\n",AGC);
+  if(!strcmp(argv[1],"on")){
+
+  }
+  if(!strcmp(argv[1],"off")){
+
+  }
+
+return 0;
+} 
+
+// Strobes 
+//TODO
+int strobe_cmd(char **argv,unsigned short argc){
+
+// create struct for look up table 
+const SYM_ADDR strobeSym[]= {{"SRES",TI_CCxxx0_SRES},      // Reset chip.
+                              {"SFSTXON",TI_CCxxx0_SFSTXON},// Enable/calibrate freq synthesizer
+                              {"SXOFF",TI_CCxxx0_SXOFF},    // Turn off crystal oscillator.
+                              {"SCAL",TI_CCxxx0_SCAL},      // Calibrate freq synthesizer & disable
+                              {"SRX",TI_CCxxx0_SRX},        // Enable RX.
+                              {"STX",TI_CCxxx0_STX},        // Enable TX.
+                              {"SIDLE",TI_CCxxx0_SIDLE},    // Exit RX / TX
+                              {"SAFC",TI_CCxxx0_SAFC},      // AFC adjustment of freq synthesizer
+                              {"SWOR",TI_CCxxx0_SWOR},      // Start automatic RX polling sequence
+                              {"SPWD",TI_CCxxx0_SPWD},      // Enter pwr down mode when CSn goes hi
+                              {"SFRX",TI_CCxxx0_SFRX},      // Flush the RX FIFO buffer.
+                              {"SFTX",TI_CCxxx0_SFTX},      // Flush the TX FIFO buffer.
+                              {"SWORRST",TI_CCxxx0_SWORRST},// Reset real time clock.
+                              {"SNOP",TI_CCxxx0_SNOP},      // No operation.
+                              {NULL,0xFF}};                 
+
+if(radio_cmd){
+
+}
+//  Radio_Write_Burst_Registers(TI_CCxxx0_PATABLE, paTable_CC1101, paTableLen, CC1101);
+
+
+return 0;
+}
 //table of commands with help
 const CMD_SPEC cmd_tbl[]={{"help"," [command]",helpCmd},
                     {"reset","\r\n\t""Reset the MSP430",resetCmd},
                     {"spitest","Tests the SPI lines", spitest},
                     {"clk","[bgnd|stop]\r\n\r""Output the clock signals on port 5 pins 4-6",clkCmd},
                     {"bus","\r\n\t""Output pattern on BUS pins",busCmd},
-                    {"on","[bgnd|stop]\r\n\t""Command COMM on",onCmd},
-                    {"Off","port [port ...]\r\n\t""Command COMM off",offCmd},
-                    {"StatusCOMM","\r\n\t""Get CDH status",statusCmd},
                     {"writeradioreg","[radio regaddr data]", writeReg},
                     {"readradioreg","[radio regaddr]", readReg},
                     {"gdoin","",gdoin_cmd},
                     {"beacon","[on|off]\r\n\t""Turn on/off status requests and beacon\r\n",beaconCmd},
+                    {"stream","[zeros|ones|[value [val]]]\r\n""Stream data from radio",streamCmd},
+                    {"power","[power]\r\n""get/set the radio output power",power_Cmd},
+                    {"amp","Turns the COMM board CC1011 radio amplifier on [on] or off [off]",amp_Cmd},
+                    {"status","",status_Cmd},
+                    {"AGC","Auto gain command [off],[on]",AGC_Cmd},
+                    {"Strobe","[radio],[strobe name-->SRES,SFSTXON,SXOFF,SCAL,SRX,STX,SIDLE,SWOR,SPWD,SFRX,SFTX,SWORRST,SNOP]",strobe_cmd},
                    //end of list
 
                    {NULL,NULL,NULL}};
