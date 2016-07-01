@@ -326,7 +326,7 @@ Radio_Write_Registers(TI_CCxxx0_TEST2,    0x81, CC1101);
 Radio_Write_Registers(TI_CCxxx0_TEST1,    0x35, CC1101);
 Radio_Write_Registers(TI_CCxxx0_TEST0,    0x09, CC1101);
 Radio_Write_Registers(TI_CCxxx0_PKTCTRL1, 0x00, CC1101);     
-Radio_Write_Registers(TI_CCxxx0_PKTCTRL0, 0x02, CC1101);      // Infinite packet length mode set
+Radio_Write_Registers(TI_CCxxx0_PKTCTRL0, 0x02, CC1101);      // Infinite packet length mode set and whitening is off 
 Radio_Write_Registers(TI_CCxxx0_PKTLEN,   0xFF, CC1101);      // Packet length set for fixed packet length mode
 Radio_Write_Registers(TI_CCxxx0_ADDR,     0x00, CC1101);
 Radio_Write_Registers(TI_CCxxx0_SYNC1,    0x7E, CC1101);      // SYNC Word High Byte (SYNC0 sync word low byte)

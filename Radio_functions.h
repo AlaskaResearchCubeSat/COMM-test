@@ -14,6 +14,9 @@
 
 #define RADIO_PINS_SPI (RADIO_PIN_SOMI | RADIO_PIN_SIMO | RADIO_PIN_SCK)
 
+//crystal frequency for radio CC1101 
+#define RF_OSC_F 26000000
+
 #define IDLE         0
 #define TX_START     1
 #define TX_RUNNING   2

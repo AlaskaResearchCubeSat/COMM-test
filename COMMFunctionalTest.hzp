@@ -5,7 +5,8 @@
       Name="Common"
       Platform="MSP430"
       Target="MSP430F2618"
-      build_use_hardware_multiplier="16-Bit Multiplier" c_preprocessor_definitions=""
+      build_use_hardware_multiplier="16-Bit Multiplier"
+      c_preprocessor_definitions=""
       c_system_include_directories="$(PackagesDir)/libraries/libctl/include;$(StudioDir)/include;$(PackagesDir)/include;$(ARC_prefix)/include"
       libctl="Yes"
       link_symbol_definitions="CTL_IRQ_STACK_SIZE=128"
@@ -27,22 +28,19 @@
       <file file_name="Error_decode.c" />
       <file file_name="COMM_errors.h" />
       <file file_name="UC1int.c" />
-      <file file_name="timer.c" />
-      <file file_name="timer.h" />
       <file file_name="Radio_functions.c" />
       <file file_name="COMM.c" />
       <file file_name="COMM.h" />
     </folder>
     <folder Name="System Files">
       <file file_name="$(PackagesDir)/libraries/libctl/source/threads.js" />
-      <file file_name="$(StudioDir)/src/crt0.asm" />
     </folder>
     <configuration
       Name="Debug"
-      linker_additional_files="$(ARC_prefix)/lib/Error_printf_Debug.hza;$(ARC_prefix)/lib/termlib_Debug.hza;$(ARC_prefix)/lib/UART_UCA1_Debug.hza" />
+      linker_additional_files="$(ARC_prefix)/lib/BUSlib_Debug.hza;$(ARC_prefix)/lib/Error_printf_Debug.hza;$(ARC_prefix)/lib/termlib_Debug.hza;$(ARC_prefix)/lib/UART_UCA1_Debug.hza;$(ARC_prefix)/lib/commandLib_Debug.hza" />
     <configuration
       Name="Release"
-      linker_additional_files="$(ARC_prefix)/lib/Error_printf_Release.hza;$(ARC_prefix)/lib/termlib_Release.hza;$(ARC_prefix)/lib/UART_UCA1_Release.hza" />
+      linker_additional_files="$(ARC_prefix)/lib/BUSlib_Release.hza;$(ARC_prefix)/lib/Error_printf_Release.hza;$(ARC_prefix)/lib/termlib_Release.hza;$(ARC_prefix)/lib/UART_UCA1_Release.hza;$(ARC_prefix)/lib/commandLib_Release.hza" />
     <configuration Name="dev" c_preprocessor_definitions="DEV_BUILD" />
   </project>
   <configuration

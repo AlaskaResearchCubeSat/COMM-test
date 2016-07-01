@@ -22,12 +22,3 @@ void start_timerA(void){
 //start timer A
   TACTL|=MC_2;
 }
-
-//================[Time Tick interrupt]=========================
-void task_tick(void) __ctl_interrupt[TIMERA0_VECTOR]{
-  //set rate to 1024Hz
-  TACCR0+=32;
-  //increment timer
-  ctl_increment_tick_from_isr();
-}
-

@@ -2,84 +2,67 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctl.h>
-#include <UCA1_uart.h>
 #include <terminal.h>
+#include <ARCbus.h>
+#include <UCA1_uart.h>
+//#include <SDlib.h>
 #include "timer.h"
 #include "Radio_functions.h"
 #include "COMM.h"
 
-//task structure for idle task
-CTL_TASK_t idle_task;
 
-CTL_TASK_t terminal_task;
-CTL_TASK_t comm_task;
+//Define three task structures in array tasks (what are these tasks?)
+CTL_TASK_t tasks[3];
 
-//stack for task
+//Define stacks for each tasks, STACKSize is the middle number
 unsigned stack1[1+256+1];
-unsigned comm_stack[1+256+1];
+unsigned stack2[1+512+1];
+unsigned stack3[1+256+1];
 
 //make printf send over UCA1
 int __putchar(int ch){
-  return UCA1_TxChar(ch);
+    return async_TxChar(ch);
+
 }
 
 int __getchar(void){
-  return UCA1_Getc();
-}
+    return async_Getc();
 
-
-void initCLK(void){
-  //set XT1 load caps, do this first so XT1 starts up sooner
-  BCSCTL3=XCAP_0;
-  //stop watchdog
-  WDTCTL = WDTPW|WDTHOLD;
-  //setup clocks
-
-  //set DCO to 16MHz from calibrated values
-  DCOCTL=0;
-  BCSCTL1=CALBC1_16MHZ;
-  DCOCTL=CALDCO_16MHZ;
-}
-
-void start_term(void *p){
-  //start terminal task when done
-  terminal(p);
 }
 
 void main(void){
-  P7OUT=0xFF;
-  P7DIR=0xFF;
-
   //initialize clocks
-  initCLK();
-  //setup timerA
-  init_timerA();
+  ARC_setup(); 
+  //setup SD card peripherals
+  //mmcInit_msp(); //note that the SD card cannot be used wile UART is being used for the "old" MSP
   //initialize UART
   UCA1_init_UART();
- // init SPI and pins for radio 
-  radio_init();
- //initialize tasking
-  ctl_task_init(&idle_task, 255, "idle");  
+  // init SPI and pins for radio 
+  COMM_Setup();
+  //setup bus interface
+  initARCbus(BUS_ADDR_COMM);
 
-  //start timerA
-  start_timerA();
+  //setup P7 I/O output
+  P7OUT = BUS_ADDR_COMM;
+  P7DIR = 0xFF;
+  P7SEL = 0;
 
-  //initialize stack
-  memset(stack1,0xcd,sizeof(stack1));  // write known values into the stack
+  //initialize stacks
+  memset(stack1, 0xcd, sizeof(stack1));  // write known values into the stack
   stack1[0]=stack1[sizeof(stack1)/sizeof(stack1[0])-1]=0xfeed; // put marker values at the words before/after the stack
+ 
+  memset(stack2, 0xcd, sizeof(stack2));  // write known values into the stack
+  stack2[0]=stack2[sizeof(stack2)/sizeof(stack2[0])-1]=0xfeed; // put marker values at the words before/after the stack
 
-  P7OUT=BIT7;
+  memset(stack3, 0xcd, sizeof(stack3));  // write known values into the stack
+  stack3[0]=stack3[sizeof(stack3)/sizeof(stack3[0])-1]=0xfeed; // put marker values at the words before/after the stack
 
-  //create tasks
-  ctl_task_run(&comm_task, 50, COMM_events, NULL, "COMM_events", sizeof(comm_stack)/sizeof(comm_stack[0])-2,comm_stack+1,0);
-  ctl_task_run(&terminal_task,2,start_term,"COMM Test Program Ready","terminal",sizeof(stack1)/sizeof(stack1[0])-2,stack1+1,0);
+//create tasks
+  ctl_task_run(&tasks[0], BUS_PRI_LOW, COMM_events, NULL, "COMM_events", sizeof(stack1)/sizeof(stack1[0])-2,stack1+1,0);
+  ctl_task_run(&tasks[1], BUS_PRI_NORMAL, terminal, "Test COMM code", "terminal", sizeof(stack2)/sizeof(stack2[0])-2,stack2+1,0);
+  ctl_task_run(&tasks[2], BUS_PRI_HIGH, sub_events, NULL, "sub_events", sizeof(stack3)/sizeof(stack3[0])-2,stack3+1,0);
   
-  // drop to lowest priority to start created tasks running.
-  ctl_task_set_priority(&idle_task,0);
-
-  for(;;){
-    LPM0;
-  }
+  mainLoop();
 }
 
 
@@ -87,6 +70,7 @@ void main(void){
 
 void Port2_ISR (void) __ctl_interrupt[PORT2_VECTOR]
 {
+/*
   unsigned char flags=P2IFG;
   P2IFG&=~flags;
    if (flags & CC1101_GDO0) // GDO0 is set up to assert when RX FIFO is greater than FIFO_THR.  This is an RX function only
@@ -128,31 +112,5 @@ void Port2_ISR (void) __ctl_interrupt[PORT2_VECTOR]
         }
     }
 
-
-}
-
-//==============[task library error function]==============
-
-//something went seriously wrong
-//perhaps should try to recover/log error
-void ctl_handle_error(CTL_ERROR_CODE_t e){
-  switch(e){
-    case CTL_ERROR_NO_TASKS_TO_RUN: 
-      __no_operation();
-      //puts("Error: No Tasks to Run\r");
-    break;
-    case CTL_UNSUPPORTED_CALL_FROM_ISR: 
-      __no_operation();
-      //puts("Error: Wait called from ISR\r");
-    break;
-    case CTL_UNSPECIFIED_ERROR:
-      __no_operation();
-      //puts("Error: Unspesified Error\r");
-    break;
-    default:
-      __no_operation();
-      //printf("Error: Unknown error code %i\r\n",e);
-  }
-  //something went wrong, reset
-  WDTCTL=0;
+*/
 }

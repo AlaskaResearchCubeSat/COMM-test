@@ -115,6 +115,7 @@ void COMM_events(void *p) __toplevel{
   unsigned int e, count;
   int i, resp; 
 
+
   //initialize status
     Reset_Radio(CC1101);                         // Reset Radios
 
@@ -332,7 +333,6 @@ void COMM_events(void *p) __toplevel{
 
 
    } //end for loop
-
 }
 
 void COMM_Setup(void){
