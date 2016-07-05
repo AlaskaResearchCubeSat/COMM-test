@@ -87,7 +87,7 @@ int clkCmd(char *argv[],unsigned short argc){
 }
 
 ///////////////////// RADIO CMDS /////////////////////////////////////
-
+//done
 int writeReg(char **argv,unsigned short argc){
   char radio, regaddr, regdata;
   if(argc>3){
@@ -113,6 +113,7 @@ int writeReg(char **argv,unsigned short argc){
   return -2;
 }
 
+//done
 int readReg(char **argv,unsigned short argc){
   char result, radio, regaddr;
   if(argc>2){
@@ -139,7 +140,7 @@ int readReg(char **argv,unsigned short argc){
   return -2;
 }
 
-//parsing the "witch radio cmd" passes back 1 for CC1101/ 0 for CC2500
+//parsing the "witch radio cmd" passes back 1 for CC1101/ 0 for CC2500 (done)
 int radio_cmd(char *arg){
 int radio;
     if(!strcmp(arg,"CC1101")){
@@ -154,7 +155,7 @@ int radio;
 return radio;
 }
 
-//who am i... passes back radio name as a string
+//who am i... passes back radio name as a string (done)
 char * whoami_cmd(int r){
   char * radio;
   if(r==CC1101){
@@ -169,6 +170,7 @@ char * whoami_cmd(int r){
 }
 
 //checks MSP pins connected to the radio (NOTE only set up for 1 radio (CC1101))
+//TODO (update for second radio)
 int gdoin_cmd(char **argv,unsigned short argc){
   unsigned char input;
   int radio;
@@ -181,7 +183,7 @@ int gdoin_cmd(char **argv,unsigned short argc){
     }
   }
   // tell user test is running 
-  printf("Preforming GDO test.\r\n");
+  printf("Preforming GDO test\r\n");
   //put radio in known state 5
   Radio_Write_Registers(TI_CCxxx0_IOCFG0,0x6F,CC1101); //(MSP pin 2.0 low GDO0 CC1101)(MSP pin 2.2 Low GDO0 CC2500)
   Radio_Write_Registers(TI_CCxxx0_IOCFG2,0x2F,CC1101); //(MSP pin 2.1 High GDO2 CC1101)(MSP pin 2.3 High GDO2 CC2500)
@@ -207,7 +209,8 @@ int gdoin_cmd(char **argv,unsigned short argc){
 }
 
 //set up Radio GD01 and GD02 for SPI test 
-int spitest_cmd(char **argv,unsigned short argc){
+//TODO (update for second radio)
+int spitest_Cmd(char **argv,unsigned short argc){
 unsigned char reg;
 Radio_Write_Registers(TI_CCxxx0_FREQ0,0xAA,CC1101); //write 10's to freq
 reg=Radio_Read_Registers(TI_CCxxx0_FREQ0,CC1101);
@@ -229,6 +232,8 @@ reg=Radio_Read_Registers(TI_CCxxx0_FREQ0,CC1101);
   return 0;
 } 
 
+// beacons radio 
+//TODO (update for second radio)
 int beaconCmd(char **argv,unsigned short argc){
   if(argc>1){
     printf("Error : Too many arguments\r\n");
@@ -248,6 +253,8 @@ int beaconCmd(char **argv,unsigned short argc){
   return 0;
 }
 
+// streams data from radio
+//TODO   (update for second radio)
 int streamCmd(char **argv,unsigned short argc){
   if(!strcmp(argv[1],"value")){
     data_mode=TX_DATA_PATTERN;
@@ -275,6 +282,8 @@ int streamCmd(char **argv,unsigned short argc){
   return 0;
 }
 
+//Select power output from the radio chip
+//TODO (update for second radio)
 int power_Cmd(char **argv,unsigned short argc){
   const int power_dbm[8]=             { -30, -20, -15, -10,   0,   5,   7,  10};
   const unsigned char power_PTABLE[8]={0x12,0x0E,0x1D,0x34,0x60,0x84,0xC8,0xC0};
@@ -317,6 +326,7 @@ int power_Cmd(char **argv,unsigned short argc){
 }
 
 //enable or disable the COMM radio amplifier [radio,on/off] 
+//TODO  (update for second radio)
 int amp_Cmd(char **argv,unsigned short argc){
     int radio;
     char state;
@@ -356,41 +366,60 @@ int amp_Cmd(char **argv,unsigned short argc){
 }
 
 // read radio status 
+//TODO  (test NC case)
 int status_Cmd(char **argv,unsigned short argc){
-char status, radio,state;
+char status1, status2, radio, state1, state2;
+// state info
 const char* statetbl[32]={"SLEEP","IDLE","XOFF","VCOON_MC","REGON_MC","MANCAL","VCOON","REGON","STARTCAL","BWBOOST","FS_LOCK","IFADCON","ENDCAL","RX","RX_END","RX_RST","TXRX_SWITCH","RXFIFO_OVERFLOW","FSTXON","TX","TX_END","RXTX_SWITCH","TXFIFO_UNDERFLOW"};
 // read 0x00 --> 0x2E
-  if(argc>=1){
-    radio=radio_cmd(argv[1]);
-    if(radio==-1){
-      return -1;
-    }
+ status1=Radio_Read_Status(TI_CCxxx0_MARCSTATE,CC1101); // get status of CC1101
+ status2=Radio_Read_Status(TI_CCxxx0_MARCSTATE,CC2500); // get status of CC2500
+ state1=status1&(~(BIT7|BIT6|BIT5)); //get state of CC1101
+ state2=status2&(~(BIT7|BIT6|BIT5)); //get state of CC2500
+  if(0x00==state1){
+   printf("Radio CC1011 is in the SLEEP state or may be unconnected");
   }
- status=Radio_Read_Status(TI_CCxxx0_MARCSTATE,radio_cmd(argv[1]));
- state=status&(~(BIT7|BIT6|BIT5));
+  else if(0x00==state2){
+   printf("Radio CC2500 is in the SLEEP state or may be unconnected");
+  }
+  else{
   // store stat stuff
-  printf("The status of the %s is %s\r\n",whoami_cmd(radio),statetbl[status]);
-  printf("The state is %i\r\n",state);
-  printf("The status is %i\r\n",status);
-
+    printf("The status of the CC1101 is %s.\r\n",statetbl[status1]);
+    printf("The state of the CC1101 is %i.\r\n",state1);
+    printf("The status of the CC1101 is %s.\r\n",statetbl[status2]);
+    printf("The state of the CC2500 is %i.\r\n",state2);
+  }
 return 0;
 }
 
-//turn off auto gain cmd
-//TODO
+//turn off auto gain cmd  
+//TODO  UDATE TO WRITE REG
 int AGC_Cmd(char **argv,unsigned short argc){
   unsigned char AGC;
-  AGC=Radio_Read_Registers(TI_CCxxx0_AGCTEST,CC1101);
-  printf("The AGC test reg is %hhi\n",AGC);
-  if(!strcmp(argv[1],"on")){
+  // UNFINISHED
+  const SYM_ADDR AGCSym[]= {{"NORMAL",TI_CCxxx0_SRES},       // Normal operation. Always adjust gain when required.
+                           {"FSYNC",TI_CCxxx0_SFSTXON},     // The gain setting is frozen when a sync word has been found.
+                           {"FANALOGUE",TI_CCxxx0_SFSTXON}, // Manually freeze the analogue gain setting and continue to adjust the digital gain.
+                           {"FALL",TI_CCxxx0_SFSTXON},      // Manually freezes both the analogue and the digital gain setting. Used for manually overriding the gain.
+                           {NULL,0xFF}};                 
 
+
+  if((argc>1)&&(!(strcmp((argv[1]),"CC1101"))||(!(strcmp(argv[1],"CC2500"))))){ // check inputs
+
+    AGC=Radio_Read_Registers(TI_CCxxx0_AGCTEST,radio_cmd(argv[1]));
+    printf("The AGC test reg is %hhi\n",AGC);
+    if(!strcmp(argv[2],"on")){
+      
+    }
+    if(!strcmp(argv[2],"off")){
+      
+    }
+    return 0;
   }
-  if(!strcmp(argv[1],"off")){
-
-  }
-return 0;
-} 
-
+   else
+    printf("Enter the valid input [radio , on/off]");
+ return 0;  
+}
  
 //Strobes [RADIO] [CMD]
 int strobe_cmd(char **argv,unsigned short argc){
@@ -412,27 +441,27 @@ int strobe_cmd(char **argv,unsigned short argc){
                                 {"SWORRST",TI_CCxxx0_SWORRST},// Reset real time clock.
                                 {"SNOP",TI_CCxxx0_SNOP},      // No operation.
                                {NULL,0xFF}};                 
-                               // input checking
-  if((sizeof(argc)>1)&&(!(strcmp(argv[1],"CC1101"))||!(strcmp(argv[1],"CC2500")))){
-  printf("Enter valid input arguments.\r\n");
-  return 0;
-  }
-  radio=radio_cmd(argv[1]);                     // assign radio 
-  strobe=I2C_addr_lookup(argv[2],strobeSym);    //grab strobe address from table //unsigned char I2C_addr_lookup(const char *str,const SYM_ADDR *syms);
-  Radio_Strobe(strobe,radio);                   //strobe radio 
-  status=status_Cmd(argv,argc);                 //check radio status
-  if(strobe==0xFF){
-    printf("Invalid strobe name.\r\nstrobe [radio] [strobe name]\r\n");
-    return 0;
+  // input checking
+  if((sizeof(argc)>1)&&(!(strcmp(argv[1],"CC1101"))||!(strcmp(argv[1],"CC2500")))){ 
+    radio=radio_cmd(argv[1]);                     // assign radio 
+    strobe=I2C_addr_lookup(argv[2],strobeSym);    //grab strobe address from table ,unsigned char I2C_addr_lookup(const char *str,const SYM_ADDR *syms);
+    Radio_Strobe(strobe,radio);                   //strobe radio 
+    status=status_Cmd(argv,argc);                 //check radio status
+    printf("%s Strobe command sent.\r\n",argv[2]);
+    if(strobe==0xFF){
+      printf("Invalid strobe name.\r\nstrobe [radio] [strobe name]\r\n");
+      return 0;
+    }
   }
   else  
-  printf("%s Strobe command sent.\r\n",argv[2]);
+    printf("Enter valid input arguments [radio strobe].\r\n");
 return 0;
 }
 
 
 
-//TODO bandwidth check !                                                                
+// transmition and bandwidth check !
+//TODO  (update for second radio)
 int freq_cmd(char**argv,unsigned short argc){
   long fcar=437565000,fh,fl,fo,delta; // use long or freq will not fit
   int change,dsign;
@@ -479,7 +508,7 @@ int freq_cmd(char**argv,unsigned short argc){
 return 0;
 }
 
-//LED strobe on plugin 
+//LED strobe on plugin (done)
 LED_cmd(char** argv, unsigned short argc){
   P7DIR=0xFF;
   P7OUT=0x00;
@@ -487,6 +516,7 @@ LED_cmd(char** argv, unsigned short argc){
     P7OUT=P7OUT+1;
     ctl_timeout_wait(ctl_get_current_time()+50);
   }
+  P7OUT = BUS_ADDR_COMM; // re-set LED to COMM addr
 return 0;
 }
                   
