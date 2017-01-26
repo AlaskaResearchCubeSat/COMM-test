@@ -5,7 +5,7 @@
 #include <terminal.h>
 #include <ARCbus.h>
 #include <UCA1_uart.h>
-//#include <SDlib.h>
+#include <SDlib.h>
 #include "timer.h"
 #include "Radio_functions.h"
 #include "COMM.h"
