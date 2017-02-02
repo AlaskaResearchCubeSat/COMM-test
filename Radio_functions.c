@@ -19,13 +19,12 @@ int Tx_Flag;
 void radio_init(void){
 //Set up peripherals for COMM MSP
 //Radio SPI on P5: P5.1=UCB1SIMO, P5.2=USB1SOMI, P5.3=UCB1CLK
-  UCB1CTL1 = UCSWRST;                             // Put UCB1 into reset
-  UCB1CTL0 = UCCKPH|UCMSB|UCMST|UCMODE_0|UCSYNC;  // Data Read/Write on Rising Edge
+  UCB1CTLW0 |= UCSWRST;                           // Put UCB1 into reset
+  UCB1CTLW0  = UCCKPH|UCMSB|UCMST|UCMODE_0|UCSYNC|UCSSEL_2|UCSWRST;  // Data Read/Write on Rising Edge
                                                   // MSB first, Master mode, 3-pin SPI
                                                   // Synchronous mode
-  UCB1CTL1 |= UCSSEL_2;                           // SMCLK
-  UCB1BR0 = 16;                                   // Set frequency divider so SPI runs at 16/16 = 1 MHz
-  UCB1BR1 = 0;
+                                                  // SMCLK
+  UCB1BRW = 16;                                   // Set frequency divider so SPI runs at 16/16 = 1 MHz
 
   //Radio CS P5.4=CC250_CS, P5.5=CC1101_CS, P5.6=Temp_Sensor1_CS, P5.7=TEMP_Sensor2_CS (outputs)
   //Initial state for CS is High, CS pulled low to initiate SPI
@@ -43,7 +42,7 @@ void radio_init(void){
   P5SEL |= RADIO_PINS_SPI;
 
   //Bring UCB1 out of reset state
-  UCB1CTL1 &= ~UCSWRST;
+  UCB1CTLW0 &= ~UCSWRST;
 
   //UC1IE = UCB1TXIE|UCB1RXIE;                      //Enable transmit and receive interrupt
 
