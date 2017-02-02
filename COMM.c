@@ -378,7 +378,7 @@ void COMM_Radio_SPI_PinSetup(void){
 void COMM_Setup(void){
 //SPI setup for MSP430f6779A is done on Port 3
 //Set up peripherals for COMM MSP
-//Radio SPI on P3: P3.7=UCB1SIMO, P3.6=USB1SOMI, P3.5=UCB1CLK
+//Radio SPI on P3: P4.2=UCB1SIMO, P4.4=USB1SOMI, P4.3=UCB1CLK
 //NOTE Redefined all SPI Setup on the UCA3 SPI port, COMM for ARC2 uses UCB1
 
   UCB1CTLW0 |= UCSWRST;                           // Put UCB1 into reset
@@ -397,10 +397,10 @@ void COMM_Setup(void){
   P5DIR |= CS_2500_1;                     //Set output for CC2500_1 CS
   P5DIR |= CS_2500_2;                     //Set output for CC2500_2 CS
  
-  P3DIR |= RADIO_PIN_SIMO|RADIO_PIN_SCK;
+  P4DIR |= RADIO_PIN_SIMO|RADIO_PIN_SCK;
 
   //Set pins for SPI usage
-  P3SEL0 |= RADIO_PINS_SPI;
+  P4SEL0 |= RADIO_PINS_SPI;
 
   //Bring UCB1 out of reset state
   UCB1CTLW0 &= ~UCSWRST;

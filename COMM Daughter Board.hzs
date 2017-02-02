@@ -1,13 +1,7 @@
 <!DOCTYPE CrossStudio_Session_File>
 <session>
  <Bookmarks/>
- <Breakpoints>
-  <BreakpointListItem line="42" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="2" counter="0" isFunctionBreakpoint="false" filename="z:/arc-2/daughter projects/comm daughter board/daughter board radio code/main.c" expression="" />
-  <BreakpointListItem line="48" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="2" counter="0" isFunctionBreakpoint="false" filename="z:/arc-2/daughter projects/comm daughter board/daughter board radio code/main.c" expression="" />
-  <BreakpointListItem line="51" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="2" counter="0" isFunctionBreakpoint="false" filename="z:/arc-2/daughter projects/comm daughter board/daughter board radio code/main.c" expression="" />
-  <BreakpointListItem line="53" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="2" counter="0" isFunctionBreakpoint="false" filename="z:/arc-2/daughter projects/comm daughter board/daughter board radio code/main.c" expression="" />
-  <BreakpointListItem line="54" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="2" counter="0" isFunctionBreakpoint="false" filename="z:/arc-2/daughter projects/comm daughter board/daughter board radio code/main.c" expression="" />
- </Breakpoints>
+ <Breakpoints/>
  <EEMRegistersWindow>
   <EEMRegisters moduleClockControl="841d" generalClockControl="2e" />
  </EEMRegistersWindow>
@@ -70,15 +64,9 @@
   <Watches active="0" update="Never" />
  </Watch4>
  <Files>
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="47" debugPath="Z:/ARC-2/Daughter Projects/COMM Daughter Board/Daughter Board Radio Code/commands.c" y="54" path="Z:/ARC-2/Daughter Projects/COMM Daughter Board/Daughter Board Radio Code/commands.c" left="0" selected="0" name="unnamed" top="0" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="41" debugPath="Z:/ARC-2/Daughter Projects/COMM Daughter Board/Daughter Board Radio Code/COMM.h" y="44" path="Z:/ARC-2/Daughter Projects/COMM Daughter Board/Daughter Board Radio Code/COMM.h" left="0" selected="0" name="unnamed" top="0" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="0" debugPath="Z:/ARC-2/Daughter Projects/COMM Daughter Board/Daughter Board Radio Code/COMM.c" y="383" path="Z:/ARC-2/Daughter Projects/COMM Daughter Board/Daughter Board Radio Code/COMM.c" left="0" selected="0" name="unnamed" top="357" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="0" debugPath="Z:/ARC-2/Daughter Projects/COMM Daughter Board/Daughter Board Radio Code/Radio_functions.h" y="121" path="Z:/ARC-2/Daughter Projects/COMM Daughter Board/Daughter Board Radio Code/Radio_functions.h" left="0" selected="0" name="unnamed" top="93" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="0" debugPath="Z:/ARC-2/Daughter Projects/COMM Daughter Board/Daughter Board Radio Code/Radio_functions.c" y="189" path="Z:/ARC-2/Daughter Projects/COMM Daughter Board/Daughter Board Radio Code/Radio_functions.c" left="0" selected="0" name="unnamed" top="142" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="28" debugPath="z:/arc-2/daughter projects/comm daughter board/daughter board radio code/main.c" y="52" path="Z:/arc-2/daughter projects/comm daughter board/daughter board radio code/main.c" left="0" selected="1" name="unnamed" top="12" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="0" debugPath="z:/arc-2/arc2-software/libraries/arclib/mainloop.c" y="880" path="Z:/arc-2/arc2-software/libraries/arclib/mainLoop.c" left="0" selected="0" name="unnamed" top="853" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="" x="28" debugPath="z:/arc-2/arc2-software/libraries/uart-lib/uart.c" y="36" path="Z:/arc-2/arc2-software/libraries/uart-lib/uart.c" left="0" selected="0" name="unnamed" top="0" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="0" debugPath="C:/Users/cjodell2/AppData/Local/Rowley Associates Limited/CrossWorks for MSP430/v3/packages/include/msp430f6779a.h" y="2464" path="C:/Users/cjodell2/AppData/Local/Rowley Associates Limited/CrossWorks for MSP430/v3/packages/include/msp430f6779a.h" left="0" selected="0" name="unnamed" top="2438" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="15" debugPath="C:/Users/cjodell2/Desktop/COMM-test/main.c" y="42" path="C:/Users/cjodell2/Desktop/COMM-test/main.c" left="0" selected="1" name="unnamed" top="0" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="58" debugPath="C:/Users/cjodell2/Desktop/COMM-test/COMM.c" y="387" path="C:/Users/cjodell2/Desktop/COMM-test/COMM.c" left="0" selected="0" name="unnamed" top="259" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="0" debugPath="C:/Users/cjodell2/AppData/Local/Rowley Associates Limited/CrossWorks for MSP430/v3/packages/include/msp430f6779a.h" y="5563" path="C:/Users/cjodell2/AppData/Local/Rowley Associates Limited/CrossWorks for MSP430/v3/packages/include/msp430f6779a.h" left="0" selected="0" name="unnamed" top="5537" />
  </Files>
  <MSP430CrossStudioWindow activeProject="COMM Daughter Board Code" autoConnectTarget="MSP-FET430UIF(V3)" debugSearchFileMap="" fileDialogInitialDirectory="Z:/ARC-2/Daughter Projects/COMM Daughter Board/Daughter Board Radio Code" fileDialogDefaultFilter="*.c" autoConnectCapabilities="528255" debugSearchPath="" buildConfiguration="MSP430 Debug" />
 </session>
