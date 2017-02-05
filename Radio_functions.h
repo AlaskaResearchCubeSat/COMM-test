@@ -41,7 +41,7 @@
   #define CC2500_2_GDO2  BIT3  //BIT3 on dev board daughter board!!!
 
 
-enum{CC2500_1=0, CC2500_2=1};
+enum{CC2500_1=1, CC2500_2=2};
 //Create event flags for the radios
 #define TxThrBytes 30   
 #define RxThrBytes 30
@@ -51,19 +51,27 @@ void TXRX(void *);
 void radio_interrupts(void);
 void Build_Packet(int);
 void TI_CC_Wait(unsigned int);
-void Reset_Radio(char);
-char Radio_Strobe(char, char);
-void Radio_Write_Registers(char addr, char value, char radio);
-void Radio_Write_Burst_Registers(char,unsigned char *, int, char);
-void Radio_Read_Burst_Registers(char,unsigned char *, int, char);
-char Radio_Read_Status(char addr, char radio);
-char RF_Receive_Packet(char *, char *, char);
-char Radio_Read_Registers(char addr, char radio);
-void RF_Send_Packet(unsigned char *txBuffer, int size, char radio);
-void Write_RF_Settings(char);
-void radio_init(void);
+void radio_SPI_setupt(void);
+int set_radio_path(char *);
 
-//Definitions for CC2500 (also CC1100?) Registers
+
+char Radio_Read_Registers(char addr, int radio_select);
+void Radio_Read_Burst_Registers(char,unsigned char *, int, int radio_select);
+char Radio_Read_Status(char addr, int radio_select);
+char Radio_Strobe(char, int radio_select);
+void Radio_Write_Registers(char addr, char value, int radio_select);
+void Radio_Write_Burst_Registers(char,unsigned char *, int, int radio_select);
+void Reset_Radio(int radio_select);
+void RF_Send_Packet(unsigned char *txBuffer, int size, int radio_select);
+void Write_RF_Settings(int radio_select); 
+
+char RF_Receive_Packet(char *, char *, char);//TODO update This seems to have no function in radio_functions.c ????
+
+
+//Radio addressing var and function
+extern int radio_select;
+
+//Definitions for CC2500 (also CC1100) Registers
 
 // Configuration Registers
 #define TI_CCxxx0_IOCFG2       0x00        // GDO2 output pin configuration

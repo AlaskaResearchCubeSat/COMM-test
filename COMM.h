@@ -47,10 +47,8 @@ extern short beacon_on, beacon_flag;
   //parse COMM specific events
    void COMM_events(void *p);
   
-  //Radio addressing var and function
-  extern int radio_select;
 
-  void COMM_Setup(void);
+
   void Radio_Interrupt_Setup(void);
   void PrintBuffer(char *dat, unsigned int len);
   void PrintBufferBitInv(char *dat, unsigned int len);

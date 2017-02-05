@@ -1,6 +1,7 @@
 // ALL FUNCTIONS USED TO OPERATE THE CC1100 and CC250 Radios
 #include <msp430.h>
 #include <stdio.h>
+#include <string.h>
 #include "Radio_functions.h"
 
 //char paTable_CC1101[] = {0x84};  //corresponds to +5dBm
@@ -9,92 +10,80 @@ char paTable_CC1101[] = {0xC0};  //corresponds to +10dBm
 char paTableLen=1;
 int Tx_Flag;
 
+//************************************************************* Radio setup**********************************************************************
+// If you use UCAx for SPI look at errata USCI41. UCBUSY bit sticks. this does not occur for UCBx
+//***********************************************************************************************************************************************
+void radio_SPI_setupt(void){
+//PORT MAP THE UCA3 TO PORT 3.5,6,7 
+//Code was copid from the SD lib code. SD lib code is port mapped for any communication periferial. 
+//I changed the MCC to Radio and applied the Radio SPI lines to the #defines in the Radio_functions.h file
+//We could try to set this up like SD card so that radios can be accessed on any of the SPI perifials and will still work. 
+  //unlock registers
+  PMAPKEYID=PMAPKEY;
+  //allow reconfiguration
+  PMAPCTL|=PMAPRECFG;
+  //setup SIMO
+  RADIO_PMAP_SIMO=RADIO_PM_SIMO;
+  //setup SOMI
+  RADIO_PMAP_SOMI=RADIO_PM_SOMI;
+  //setup SIMO
+  RADIO_PMAP_UCLK=RADIO_PM_UCLK;
+  //lock the Port map module
+  PMAPKEYID=0;
 
-
-
-//NOTE change all radio_init() to COMM_setup() 
-//these are the same functions 
-/*
-
-void radio_init(void){
+//SPI setup for MSP430f6779A is done on Port 3
 //Set up peripherals for COMM MSP
-//Radio SPI on P5: P5.1=UCB1SIMO, P5.2=USB1SOMI, P5.3=UCB1CLK
+//Radio SPI on P3: P4.2=UCB1SIMO, P4.4=USB1SOMI, P4.3=UCB1CLK
+//NOTE Redefined all SPI Setup on the UCA3 SPI port, COMM for ARC2 uses UCB1
+
   UCB1CTLW0 |= UCSWRST;                           // Put UCB1 into reset
   UCB1CTLW0  = UCCKPH|UCMSB|UCMST|UCMODE_0|UCSYNC|UCSSEL_2|UCSWRST;  // Data Read/Write on Rising Edge
                                                   // MSB first, Master mode, 3-pin SPI
                                                   // Synchronous mode
                                                   // SMCLK
   UCB1BRW = 16;                                   // Set frequency divider so SPI runs at 16/16 = 1 MHz
+  UCB1CTLW0 &= ~UCSWRST;  //Bring UCB1 out of reset state
 
-  //Radio CS P5.4=CC250_CS, P5.5=CC1101_CS, P5.6=Temp_Sensor1_CS, P5.7=TEMP_Sensor2_CS (outputs)
+// ************************************************* PIN setup 
+
+  //Radio CS P5.1=CC2500_CS_1 (ENABLE1), P5.2=CC2500_CS_2 (ENABLE2), 
   //Initial state for CS is High, CS pulled low to initiate SPI
   P5OUT |= CS_2500_1;                     // Ensure CS for CC2500_1 is disabled
   P5OUT |= CS_2500_2;                     // Ensure CS for CC2500_2 is disabled
 
   
-  P5DIR |= CS_1101;                     //Set output for CC2500_1 CS
-  P5DIR |= CS_2500;                     //Set output for CC2500_2 CS
-  P5DIR |= CS_TEMP1;
-  P5DIR |= CS_TEMP2;
-  P5DIR |= RADIO_PIN_SIMO|RADIO_PIN_SCK;
+  P5DIR |= CS_2500_1;                     //Set output for CC2500_1 CS
+  P5DIR |= CS_2500_2;                     //Set output for CC2500_2 CS
+ 
+  P4DIR |= RADIO_PIN_SIMO|RADIO_PIN_SCK;
 
   //Set pins for SPI usage
-  P5SEL |= RADIO_PINS_SPI;
-
-  //Bring UCB1 out of reset state
-  UCB1CTLW0 &= ~UCSWRST;
+  P4SEL0 |= RADIO_PINS_SPI;
 
   //UC1IE = UCB1TXIE|UCB1RXIE;                      //Enable transmit and receive interrupt
-
-//Radio SW P6.0, P6.1 (outputs)
-  P6OUT = 0x00;
-  P6DIR |= RF_SW1|RF_SW2;
-  P6SEL = 0;
-
-//SD Card SPI on P3/P5: P3.6=UCA1SIMO, P3.7=UCA2SOMI, P5.0=UCA1CLK
-//THIS IS HANDELED IN JESSE'S LIBRARY
-
-//Tx-Rx LED's P7.0-3 (inputs) CURRENTLY USED IN MAIN TO SHOW ADDR ON DEV BOARD.
 }
 
-*/
+//******************************************* radio handling functions 
 
-
-//Function to read a single byte from the radio registers
-char Radio_Read_Registers(char addr, char radio)
-{
-  char x;
-  
-  switch (radio){
-  case CC2500_1:
-     P5OUT &= ~CS_2500_1;                           // CS enable CS_2500_1
-     break;
-  case CC2500_2:
-     P5OUT &= ~CS_2500_2;                           // CS enable CC2500_2
-     break;
-  default:
+// for ease of terminal testing. default address is CC2500_2 = 1
+int radio_select; // this is a global var
+int set_radio_path(char *radio){
+  if (strcmp(radio,"CC2500_1")==0){
+    radio_select=CC2500_1;    //CC2500_1 = 1
+    return 0;
+  }
+  else if (strcmp(radio,"CC2500_2")==0){
+    radio_select=CC2500_2;    //CC2500_2 = 2
+    return 0;
+  }
+  else{
     return -1;
   }
-
-
-  while (!(UCB1IFG & UCTXIFG));               // Wait for TXBUF ready
-  UCB1TXBUF = (addr | TI_CCxxx0_READ_SINGLE);  // Adding 0x80 to address tells the radio to read a single byte
-  while (!(UCB1IFG & UCTXIFG));               // Wait for TXBUF ready
-  UCB1TXBUF = 0;                               // Dummy write so we can read data
-  while (UCB1STAT & UCBUSY);                   // Wait for TX to complete
-  x = UCB1RXBUF;                               // Read data
-  P5OUT |= CS_2500_1;                            // CS disable C1101
-  P5OUT |= CS_2500_2;                            // CS disable C2500 
-
-  return x;
 }
 
-//Function to read a multiple bytes from the radio registers
-void Radio_Read_Burst_Registers(char addr, unsigned char *buffer, int count, char radio)
-{
-  char i;
-
-  switch (radio){
+int radio_SPI_sel (int radio_select){  // set CS lines for SPI
+// NOTE add CC1101 for other radio code
+  switch (radio_select){
   case CC2500_1:
      P5OUT &= ~CS_2500_1;                           // CS enable CC1101
      break;
@@ -102,8 +91,47 @@ void Radio_Read_Burst_Registers(char addr, unsigned char *buffer, int count, cha
      P5OUT &= ~CS_2500_2;                           // CS enable CC2500
      break;
   default:
-    break;
+    return -1;
   }
+}
+int radio_SPI_desel(int radio_select){
+// NOTE add CC1101 for other radio code
+  switch (radio_select){
+  case CC2500_1:
+     P5OUT |= CS_2500_1;                           // CS enable CC1101
+     break;
+  case CC2500_2:
+     P5OUT |= CS_2500_2;                           // CS enable CC2500
+     break;
+  default:
+    return -1;
+  }
+}
+
+//Function to read a single byte from the radio registers
+char Radio_Read_Registers(char addr, int radio_select){
+  char x;
+  
+  radio_SPI_sel (radio_select); // set SPI CS
+ 
+  while (!(UCB1IFG & UCTXIFG));               // Wait for TXBUF ready
+  UCB1TXBUF = (addr | TI_CCxxx0_READ_SINGLE);  // Adding 0x80 to address tells the radio to read a single byte
+  while (!(UCB1IFG & UCTXIFG));               // Wait for TXBUF ready
+  UCB1TXBUF = 0;                               // Dummy write so we can read data
+  while (UCB1STAT & UCBUSY);                   // Wait for TX to complete
+  x = UCB1RXBUF;                               // Read data
+
+  radio_SPI_desel(radio_select); // de-select SPI CS
+
+  return x;
+}
+
+//Function to read a multiple bytes from the radio registers
+void Radio_Read_Burst_Registers(char addr, unsigned char *buffer, int count, int radio_select)
+{
+  char i;
+
+  radio_SPI_sel (radio_select); // set SPI CS
 
   while (!(UCB1IFG & UCTXIFG));              // Wait for TXBUF ready
   UCB1TXBUF = (addr | TI_CCxxx0_READ_BURST);  // Adding 0xC0 to address tells the radio to read multiple bytes
@@ -119,24 +147,16 @@ void Radio_Read_Burst_Registers(char addr, unsigned char *buffer, int count, cha
     buffer[i] = UCB1RXBUF;                    // Store data from last data RX
     while (!(UCB1IFG & UCRXIFG));            // Wait for RX to finish
   }
-  buffer[count-1] = UCB1RXBUF;                // Store last RX byte in buffer
+  buffer[count-1] = UCB1RXBUF;               // Store last RX byte in buffer
   
-  P5OUT |= CS_2500_1;                           // CS disable C2500 
-  P5OUT |= CS_2500_2;
+    radio_SPI_desel(radio_select);          // de-select SPI CS
 }
 
-char Radio_Read_Status(char addr, char radio)
+char Radio_Read_Status(char addr, int radio_select)
 {
   char status;
 
-  switch (radio){
-  case CC2500_1:
-     P5OUT &= ~CS_2500_1;                           // CS enable CC1101
-     break;
-  case CC2500_2:
-     P5OUT &= ~CS_2500_2;                           // CS enable CC2500
-     break;
-  }
+  radio_SPI_sel (radio_select); // set SPI CS
 
   while (!(UCB1IFG & UCTXIFG));                 // Wait for TXBUF ready
   UCB1TXBUF = (addr | TI_CCxxx0_READ_BURST);     // Send address
@@ -144,25 +164,19 @@ char Radio_Read_Status(char addr, char radio)
   UCB1TXBUF = 0;                                 // Dummy write so we can read data
   while (UCB1STAT & UCBUSY);                     // Wait for TX to complete
   status = UCB1RXBUF;                            // Read data
-  P5OUT |= CS_2500_1;                              // CS disable C1101
-  P5OUT |= CS_2500_2;                              // CS disable C2500 
+
+  radio_SPI_desel(radio_select);          // de-select SPI CS
 
   return status;
 }
 
 //Function that sends single address to radio initiating a state or mode change 
 //(e.g. sending addr 0x34 writes to SRX register initiating radio in RX mode
-char Radio_Strobe(char strobe, char radio)
+char Radio_Strobe(char strobe, int radio_select)
 {
   char status;
-  switch (radio){
-  case CC2500_1:
-     P5OUT &= ~CS_2500_1;                           // CS enable CC1101
-     break;
-  case CC2500_2:
-     P5OUT &= ~CS_2500_2;                           // CS enable CC2500
-     break;
-  }
+
+  radio_SPI_sel (radio_select);                 // set SPI CS
 
   while (!(UCB1IFG & UCTXIFG));                  // Wait for TXBUF ready
   UCB1TXBUF = strobe;                             // Send strobe
@@ -170,21 +184,15 @@ char Radio_Strobe(char strobe, char radio)
   while (UCB1STAT & UCBUSY);                      // Wait for TX to complete
   status = UCB1RXBUF;                            // Read data
 
-  P5OUT |= CS_2500_1;                              // CS disable C1101
-  P5OUT |= CS_2500_2;                              // CS disable C2500 
+  radio_SPI_desel(radio_select);                // de-select SPI CS
+
 }
 
 //Function to write a single byte to the radio registers
-void Radio_Write_Registers(char addr, char value, char radio)
+void Radio_Write_Registers(char addr, char value, int radio_select)
 {
-  switch (radio){
-  case CC2500_1:
-    P5OUT &= ~CS_2500_1;                          // CS enable CC1101
-    break;
-  case CC2500_2:
-    P5OUT &= ~CS_2500_2;                          // CS enable CC2500
-    break;
-  }
+
+  radio_SPI_sel (radio_select);                 // set SPI CS
 
   while (!(UCB1IFG & UCTXIFG));            // Wait for TXBUF ready
   UCB1TXBUF = addr;                         // Send address
@@ -192,24 +200,17 @@ void Radio_Write_Registers(char addr, char value, char radio)
   UCB1TXBUF = value;                        // Send data
   while (UCB1STAT & UCBUSY);                // Wait for TX to complete
 
-  P5OUT |= CS_2500_1;                         // CS disable C1101
-  P5OUT |= CS_2500_2;                         // CS disable C2500 
+  radio_SPI_desel(radio_select);                // de-select SPI CS
+
   
 }
 
 //Function to write multiple bytes to the radio registers
-void Radio_Write_Burst_Registers(char addr, unsigned char *buffer, int count, char radio)
+void Radio_Write_Burst_Registers(char addr, unsigned char *buffer, int count, int radio_select)
 {
   int i;
 
-  switch(radio){
-  case CC2500_1:
-    P5OUT &= ~CS_2500_1;                            // CS enable CC1101
-    break;
-  case CC2500_2:
-    P5OUT &= ~CS_2500_2;                           // CS enable CC2500
-    break;
-  }
+  radio_SPI_sel (radio_select);                 // set SPI CS
   
   while (!(UCB1IFG & UCTXIFG));                 // Wait for TXBUF ready
   UCB1TXBUF = addr | TI_CCxxx0_WRITE_BURST;      // Adding 0x40 to address tells radio to perform burst write rather than single byte write
@@ -220,13 +221,12 @@ void Radio_Write_Burst_Registers(char addr, unsigned char *buffer, int count, ch
   }
   while (UCB1STAT & UCBUSY);                    // Wait for TX to complete
   
-  P5OUT |= CS_2500_1;                            // CS disable C1101
-  P5OUT |= CS_2500_2;                            // CS disable C2500 
+  radio_SPI_desel(radio_select);                // de-select SPI CS
 }
 
-void Reset_Radio(char radio)
+void Reset_Radio(int radio_select)
 {
-  switch (radio){
+  switch (radio_select){
   case CC2500_1:
     P5OUT |= CS_2500_1;               //Toggle CS with delays to power up radio
     TI_CC_Wait(30);
@@ -259,7 +259,7 @@ void Reset_Radio(char radio)
     break;
   }
 
-  P2IFG = 0;                        // Clear flags that were set (WHAT IS THIS?)
+  P1IFG = 0;                        //Clear flags that were set 
 }
 
 void TI_CC_Wait(unsigned int cycles)
@@ -268,19 +268,19 @@ void TI_CC_Wait(unsigned int cycles)
     cycles = cycles - 6;                    // 6 cycles consumed each iteration
 }
 
-void RF_Send_Packet(unsigned char *TxBuffer, int size, char radio)
+void RF_Send_Packet(unsigned char *TxBuffer, int size, int radio_select)
 {
-  Radio_Write_Registers(TI_CCxxx0_PKTLEN, size, radio);
-  Radio_Write_Burst_Registers(TI_CCxxx0_TXFIFO, TxBuffer, size, radio); // Write TX data
-  Radio_Strobe(TI_CCxxx0_STX, radio);                                   // Change state to TX, initiate data transfer
+  Radio_Write_Registers(TI_CCxxx0_PKTLEN, size, radio_select);
+  Radio_Write_Burst_Registers(TI_CCxxx0_TXFIFO, TxBuffer, size, radio_select); // Write TX data
+  Radio_Strobe(TI_CCxxx0_STX, radio_select);                                   // Change state to TX, initiate data transfer
   Tx_Flag = 1;
 }
 
-void Write_RF_Settings(char radio)
+void Write_RF_Settings(int radio_select)
 {
-switch (radio){
+switch (radio_select){
 /*
-case CC1101:
+case CC1101:  
 // Register Values obtained via Smart Studio for CC1101
 // Settings:
 //  Carrier Freq: 437.565 MHz (437.564972)

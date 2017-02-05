@@ -102,23 +102,6 @@ unsigned char tx_data_gen(unsigned char *dest,unsigned short size,int mode,unsig
   return seed;
 }
 
-// for ease of terminal testing. default address is CC2500_2 = 1
-int radio_select; // this is a global var
-int set_radio_path(char *radio){
-  //CC2500_1 = 0
-  //CC2500_2 = 1 
-  if (strcmp(radio,"CC2500_1")==0){
-    radio_select=CC2500_1;
-    return 0;
-  }
-  else{
-    radio_select=CC2500_2;
-    return 1;
-  }
-
-}
-
-
 
 //handle COMM specific commands don't wait here.
 int SUB_parseCmd(unsigned char src, unsigned char cmd, unsigned char *dat, unsigned short len){
@@ -131,21 +114,28 @@ int SUB_parseCmd(unsigned char src, unsigned char cmd, unsigned char *dat, unsig
   }
   return ERR_UNKNOWN_CMD;
 }
-
+//************************************************************************** COMM Events *******************************************************************************
 void COMM_events(void *p) __toplevel{
   unsigned int e, count;
   int i, resp; 
 
-    Reset_Radio(radio_select);                 // Reset Radios/initialize status
+    Reset_Radio(CC2500_1);                 // Reset Radios/initialize status
+    Reset_Radio(CC2500_2);                 // Reset Radios/initialize status
+
 
   __delay_cycles(800);                         // Wait for radio to be ready before writing registers.cc1101.pdf Table 13 indicates a power-on start-up time of 150 us for the crystal to be stable
                                                // After reset chip is in IDLE state
-  Write_RF_Settings(radio_select);             // Write radios Settings
+  Write_RF_Settings(CC2500_1);             // Write radios Settings
+  Write_RF_Settings(CC2500_2);             // Write radios Settings
 
-//  Radio_Write_Burst_Registers(TI_CCxxx0_PATABLE, paTable_CC1101, paTableLen, CC1101);
+
+  //Radio_Write_Burst_Registers(TI_CCxxx0_PATABLE, paTable_CC1101, paTableLen, CC1101);
   Radio_Interrupt_Setup();
+
   //TODO Need to set up two radio setups. Might have to have them done separtely  
-  Radio_Strobe(TI_CCxxx0_SRX, radio_select);          //Initialize CCxxxx in Rx mode
+  Radio_Strobe(TI_CCxxx0_SRX, CC2500_1);          //Initialize CCxxxx in Rx mode
+  Radio_Strobe(TI_CCxxx0_SIDLE, CC2500_2);          //Initialize CCxxxx in Rx mode
+
 
   // Need to wait first for RF on command from CDH.  Nothing happens until we get that command!
   // After RF on command we can send Beacon data.
@@ -354,74 +344,7 @@ void COMM_events(void *p) __toplevel{
 }
 
 
-void COMM_Radio_SPI_PinSetup(void){
-//PORT MAP THE UCA3 TO PORT 3.5,6,7 
-//Code was copid from the SD lib code. SD lib code is port mapped for any communication periferial. 
-//I changed the MCC to Radio and applied the Radio SPI lines to the #defines in the Radio_functions.h file
-//We could try to set this up like SD card so that radios can be accessed on any of the SPI perifials and will still work. 
-  //unlock registers
-  PMAPKEYID=PMAPKEY;
-  //allow reconfiguration
-  PMAPCTL|=PMAPRECFG;
-  //setup SIMO
-  RADIO_PMAP_SIMO=RADIO_PM_SIMO;
-  //setup SOMI
-  RADIO_PMAP_SOMI=RADIO_PM_SOMI;
-  //setup SIMO
-  RADIO_PMAP_UCLK=RADIO_PM_UCLK;
-  //lock the Port map module
-  PMAPKEYID=0;
 
-}
-
-
-void COMM_Setup(void){
-//SPI setup for MSP430f6779A is done on Port 3
-//Set up peripherals for COMM MSP
-//Radio SPI on P3: P4.2=UCB1SIMO, P4.4=USB1SOMI, P4.3=UCB1CLK
-//NOTE Redefined all SPI Setup on the UCA3 SPI port, COMM for ARC2 uses UCB1
-
-  UCB1CTLW0 |= UCSWRST;                           // Put UCB1 into reset
-  UCB1CTLW0  = UCCKPH|UCMSB|UCMST|UCMODE_0|UCSYNC|UCSSEL_2|UCSWRST;  // Data Read/Write on Rising Edge
-                                                  // MSB first, Master mode, 3-pin SPI
-                                                  // Synchronous mode
-                                                  // SMCLK
-  UCB1BRW = 16;                                   // Set frequency divider so SPI runs at 16/16 = 1 MHz
-
-  //Radio CS P5.1=CC2500_CS_1 (ENABLE1), P5.2=CC2500_CS_2 (ENABLE2), 
-  //Initial state for CS is High, CS pulled low to initiate SPI
-  P5OUT |= CS_2500_1;                     // Ensure CS for CC2500_1 is disabled
-  P5OUT |= CS_2500_2;                     // Ensure CS for CC2500_2 is disabled
-
-  
-  P5DIR |= CS_2500_1;                     //Set output for CC2500_1 CS
-  P5DIR |= CS_2500_2;                     //Set output for CC2500_2 CS
- 
-  P4DIR |= RADIO_PIN_SIMO|RADIO_PIN_SCK;
-
-  //Set pins for SPI usage
-  P4SEL0 |= RADIO_PINS_SPI;
-
-  //Bring UCB1 out of reset state
-  UCB1CTLW0 &= ~UCSWRST;
-
-  //UC1IE = UCB1TXIE|UCB1RXIE;                      //Enable transmit and receive interrupt
-
-
-//SD Card SPI on P3/P5: P3.6=UCA1SIMO, P3.7=UCA2SOMI, P5.0=UCA1CLK
-//THIS IS HANDELED IN JESSE'S LIBRARY
-
-//Tx-Rx LED's P7.0-3 (inputs) CURRENTLY USED IN MAIN TO SHOW ADDR ON DEV BOARD.
-}
-
-void Radio_Interrupt_Setup(void){ // Enable RX interrupts only!  TX interrupt enabled in TX Start
-  // Use GDO0 and GDO2 as interrupts to control TX/RX of radio
-  P1DIR = 0;			        // Port 1 configured as inputs (i.e. GDO0 and GDO2 are inputs)
-  P1IES = 0;
-  P1IES |= CC2500_1_GDO2|CC2500_2_GDO2; // GDO0 interrupts on rising edge = 0, GDO2 interrupts on falling edge = 1
-  P1IFG = 0;                            // Clear all flags
-  P1IE |= CC2500_1_GDO0|CC2500_2_GDO0; // Enable GDO0 interrupt only (RX interrupt)
-}
 
 
 
@@ -450,4 +373,68 @@ void PrintBufferBitInv(char *dat, unsigned int len){
     printf("\r\n");
     printf("\r\n");
 }
+//************************************************************** radio IR ****************************************************************************************
+void Radio_Interrupt_Setup(void){ // Enable RX interrupts only!  TX interrupt enabled in TX Start
+  // Use GDO0 and GDO2 as interrupts to control TX/RX of radio
+  P1DIR = 0;			        // Port 1 configured as inputs (i.e. GDO0 and GDO2 are inputs)
+  P1IES = 0;
+  P1IES |= CC2500_1_GDO2|CC2500_2_GDO2; // GDO0 interrupts on rising edge = 0, GDO2 interrupts on falling edge = 1
+  P1IFG = 0;                            // Clear all flags
+  P1IE |= CC2500_1_GDO0|CC2500_2_GDO0; // Enable GDO0 interrupt only (RX interrupt)
+}
 
+void Port1_ISR (void) __ctl_interrupt[PORT1_VECTOR]
+{
+   if (P1IFG & CC2500_1_GDO0){ // GDO0 is set up to assert when RX FIFO is greater than FIFO_THR.  This is an RX function only
+    
+        P1IFG &= ~CC2500_1_GDO0;
+        //ctl_events_set_clear(&COMM_evt,CC1101_EV_RX_READ,0);
+    } 
+
+    if (P1IFG & CC2500_1_GDO2){ //GDO2 is set up to assert when TX FIFO is above FIFO_THR threshold.  
+                             //Interrups on falling edge, i.e. when TX FIFO falls below FIFO_THR
+        P1IFG &= ~CC2500_1_GDO2;
+
+    }
+
+    if (P1IFG & CC2500_2_GDO0){ // GDO0 is set up to assert when RX FIFO is greater than FIFO_THR.  This is an RX function only
+    
+        P1IFG &= ~CC2500_2_GDO0;
+        //ctl_events_set_clear(&COMM_evt,CC1101_EV_RX_READ,0);
+    } 
+
+    if (P1IFG & CC2500_2_GDO2){ //GDO2 is set up to assert when TX FIFO is above FIFO_THR threshold.  
+                             //Interrups on falling edge, i.e. when TX FIFO falls below FIFO_THR
+       P1IFG &= ~CC2500_2_GDO2;
+
+        switch(state)
+        {
+            case IDLE:
+                 //P1IFG &= ~CC1101_GDO2;
+                 break;
+
+            case TX_START:  //Called on falling edge of GDO2, Tx FIFO < threshold, Radio in TX mode, Packet in progress
+                 state = TX_RUNNING;
+                // P1IFG &= ~CC1101_GDO2;
+               //  ctl_events_set_clear(&COMM_evt,CC1101_EV_TX_THR,0);
+                 break;
+            
+            case TX_RUNNING: //Called on falling edge of GDO2, Tx FIFO < threshold, Radio in TX mode, Packet in progress
+                // P2IFG &= ~CC1101_GDO2;
+            //     ctl_events_set_clear(&COMM_evt,CC1101_EV_TX_THR,0);
+                 break;
+
+            case TX_END:  //Called on falling edge of GDO2, Tx FIFO < threshold, Radio in TX mode, Last part of packet to transmit
+                 state = IDLE;
+                // P1IFG &= ~CC1101_GDO2;
+             //    ctl_events_set_clear(&COMM_evt,CC1101_EV_TX_END,0);
+                 break;
+
+            default:
+              //P1IFG &= ~CC1101_GDO2;
+              break;          
+  
+        }
+    }
+
+}

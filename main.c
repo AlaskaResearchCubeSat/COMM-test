@@ -39,8 +39,7 @@ void main(void){
   P7OUT=0x1F;
   
   //Initlize the comm communication port for the SPI 
-  COMM_Radio_SPI_PinSetup(); // Do this before ARC_setup because of PM 
-  COMM_Setup();
+  radio_SPI_setupt(); // Do this before ARC_setup because of PM 
 
   //DO this first (but not before PM)
   ARC_setup(); 
@@ -66,7 +65,7 @@ void main(void){
 
   // creating the tasks
   ctl_task_run(&terminal_task,BUS_PRI_LOW,terminal,"Mike's Awesome COMM Code","terminal",sizeof(terminal_stack)/sizeof(terminal_stack[0])-2,terminal_stack-1,0);
-  //ctl_task_run(&comm_task,BUS_PRI_NORMAL,COMM_events,NULL,"COMM_SYS_events",sizeof(COMM_sys_stack)/sizeof(COMM_sys_stack[0])-2,COMM_sys_stack-1,0);
+  ctl_task_run(&comm_task,BUS_PRI_NORMAL,COMM_events,NULL,"COMM_SYS_events",sizeof(COMM_sys_stack)/sizeof(COMM_sys_stack[0])-2,COMM_sys_stack-1,0);
   ctl_task_run(&sub_task,BUS_PRI_HIGH,sub_events,NULL,"SUB_events",sizeof(sub_stack)/sizeof(sub_stack[0])-2,sub_stack-1,0);
 
   //main loop <-- this is an ARCbus function 

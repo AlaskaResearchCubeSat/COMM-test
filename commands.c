@@ -15,13 +15,38 @@ Then function must be added to the "const CMD_SPEC cmd_tbl[]={{"help"," [command
 #include <i2c.h>
 #include <Radio_functions.h>
 #include "COMM.h"
-
+//********************************************************************  Example commands (not really comm related ) *********************************************
+int example_command(char **argv,unsigned short argc){
+  int i,j;
+  //TODO replace printf with puts ? 
+  printf("This is an example command that shows how arguments are passed to commands.\r\n""The values in the argv array are as follows : \r\n");
+  for(i=0;i<=argc;i++){
+    printf("argv[%i] = 0x%p\r\n\t""string = \"%s\"\r\n",i,argv[i],argv[i]);
+    //print out the string as an array of hex values
+    j=0;
+    printf("\t""hex = {");
+    do{
+      //check if this is the first element
+      if(j!='\0'){
+        //print a space and a comma
+        printf(", ");
+      }
+      //print out value
+      printf("0x%02hhX",argv[i][j]);
+    }while(argv[i][j++]!='\0');
+    //print a closing bracket and couple of newlines
+    printf("}\r\n\r\n");
+    printf("argc = %i\r\n",argc);
+  }
+  return 0;
+}
 /*********************************************************** Using the Timer_A1 ***************************************************************
 * DONT USE TIMER0_Ax_VECTOR !!! this interrupt is use in library code and will cause a collision 
 * Use TIMERx_Ay_VECTOR x=2,3 & y=0,1
 * TIMER0_Ax_VECTOR used in ARClib ? 
 * TIMER1_Ax_VECTOR used in ????
 **********************************************************************************************************************************************/
+
 int example_timer_IR(char **argv,unsigned short argc){
   int timer_check;
   WDTCTL = WDTPW+WDTHOLD;                                   // Stop WDT
@@ -59,32 +84,57 @@ void Timer_A2_A1(void)__interrupt[TIMER2_A1_VECTOR]{     // Timer A0 interrupt s
         P7OUT^=BIT1; // light LEDs
 }
 //*********************************************************************************** RADIO COMMANDS *****************************************************
-/*
+
 int writeReg(char **argv,unsigned short argc){
-  char radio, regaddr, regdata;
+  char radio_select, regaddr, regdata;  // expecting [radio] [address] [data]
+  int radio_check;
+
   if(argc>3){ // input checking and set radio address 
     printf("Error : Too many arguments\r\n");
     return -1;
   }
-  if(argc==3){
-    if(!strcmp(argv[1],"CC2500_1")){
-      radio_select = 0;
-    } else if(!strcmp(argv[1],"CC2500_2")){
-      radio_select = 1;
-    } else {
+
+  radio_check = set_radio_path(argv[1]);  // set radio_select  
+
+   if (radio_check==-1) {
       printf("Error: Unknown radio \"%s\"\r\n",argv[1]);
       return -2;
     }
+  else{
     regaddr=strtoul(argv[2],NULL,0);
     regdata = strtoul(argv[3],NULL,0);
-    Radio_Write_Registers(regaddr, regdata, radio);
+    Radio_Write_Registers(regaddr, regdata, radio_select);
     printf("Wrote register 0x%02x = 0x%02x [regaddr, regdata]\r\n", regaddr, regdata);
     return 0;
   }
+
   printf("Error : %s requires 3 arguments but %u given\r\n",argv[0],argc);
   return -2;
 }
-*/
+
+int readReg(char **argv,unsigned short argc){
+  char result, radio, regaddr;  // expecting [radio]  [address]
+  int radio_check;
+
+  if(argc>2){
+    printf("Error : Too many arguments\r\n");
+    return -1;
+  }
+
+  radio_check = set_radio_path(argv[1]);  // set radio_select  
+
+   if (radio_check==-1) {
+      printf("Error: Unknown radio \"%s\"\r\n",argv[1]);
+      return -2;
+    }
+  else {
+    printf("Radio = %i\r\n",radio);
+    regaddr=strtoul(argv[2],NULL,0);
+    result= Radio_Read_Registers(regaddr, radio_select);
+    printf("Register 0x%02x = 0x%02x [regaddr, regdata]\r\n", regaddr, result);
+  }
+  return 0;
+}
 
 int status_Cmd(char **argv,unsigned short argc){
 char status1, status2, radio, state1, state2;
@@ -93,8 +143,8 @@ char status1, status2, radio, state1, state2;
 // read 0x00 --> 0x2E
  status1=Radio_Read_Status(TI_CCxxx0_MARCSTATE,CC2500_1); // get status of CC1101
  status2=Radio_Read_Status(TI_CCxxx0_MARCSTATE,CC2500_2); // get status of CC2500
- state1=status1&(~(BIT7|BIT6|BIT5)); //get state of CC1101
- state2=status2&(~(BIT7|BIT6|BIT5)); //get state of CC2500
+ state1=status1&(~(BIT7|BIT6|BIT5)); //get state of CC2500_1
+ state2=status2&(~(BIT7|BIT6|BIT5)); //get state of CC2500_2
   if(0x00==state1){
    printf("Radio CC1011 is in the SLEEP state or may be unconnected");
   }
@@ -103,15 +153,15 @@ char status1, status2, radio, state1, state2;
   }
   else{
   // store stat stuff
-    printf("The status of the CC1101 is %s.\r\n",statetbl[status1]);
-    printf("The state of the CC1101 is %i.\r\n",state1);
-    printf("The status of the CC1101 is %s.\r\n",statetbl[status2]);
-    printf("The state of the CC2500 is %i.\r\n",state2);
+    printf("The status of the CC2500_1 is %s.\r\n",statetbl[status1]);
+    printf("The state of the CC2500_1 is %i.\r\n",state1);
+    printf("The status of the CC2500_2 is %s.\r\n",statetbl[status2]);
+    printf("The state of the CC2500_2 is %i.\r\n",state2);
   }
 return 0;
 }
 
-/*
+
 // streams data from radio argv[1]=ADR ,argv[2]= mode, argv[3]= val
 //TODO   (update for second radio)
 int streamCmd(char **argv,unsigned short argc){
@@ -143,13 +193,16 @@ int streamCmd(char **argv,unsigned short argc){
 
   return 0;
 }
-*/
+
 //table of commands with help
 const CMD_SPEC cmd_tbl[]={{"help"," [command]",helpCmd},
                    {"timer_IR","[time]...\r\n\tExample command to show how the timer can be used as an interupt",example_timer_IR},
-                  // {"status","",status_Cmd},
-                   //{"stream","[zeros|ones|[value [val]]]\r\n""Stream data from radio\n\r",streamCmd},
-                   ARC_COMMANDS,CTL_COMMANDS,ERROR_COMMANDS,
+                   {"ex","[arg1] [arg2] ...\r\n\t""Example command to show how arguments are passed",example_command},
+                   {"radio status","",status_Cmd},
+                   {"stream","[zeros|ones|[value [val]]]\r\n""Stream data from radio\n\r",streamCmd},
+                   {"writereg","Writes data to radio register\r\n [radio] [adress] [data]",writeReg},
+                   {"readreg","reads data from a radio register\r\n [radio] [adrss]",readReg},
+                   ARC_COMMANDS,CTL_COMMANDS,// ERROR_COMMANDS,
                    //end of list
                    {NULL,NULL,NULL}};
 
