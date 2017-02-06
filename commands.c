@@ -183,12 +183,13 @@ int streamCmd(char **argv,unsigned short argc){
     }
   }
   
-  ctl_events_set_clear(&COMM_sys_events,CC1101_EV_TX_START,0); // This has been hardcoded to 0 change "0" to address 
+  // input case statment to pick from enum table in COMM.h
+  ctl_events_set_clear(&COMM_sys_events,CC1101_EV_TX_START,0); 
   
   printf("Push any key to stop\r\n");
   getchar(); // waits for any char 
   
-  Radio_Write_Registers(TI_CCxxx0_PKTCTRL0, 0x00, 0);         // Fixed byte mode
+  Radio_Write_Registers(TI_CCxxx0_PKTCTRL0, 0x00, radio_select);         // Fixed byte mode
   state = TX_END;
 
   return 0;

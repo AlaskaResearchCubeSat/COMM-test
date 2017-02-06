@@ -6,14 +6,14 @@
 
 //Radio Pins for SPI 
 //for ARC2 change these defines for ARC2 ICD compliance 
-#define RADIO_PIN_SIMO BIT2 //BIT2
-#define RADIO_PIN_SOMI BIT4 //BIT1
-#define RADIO_PIN_SCK  BIT3 //BIT0
+#define RADIO_PIN_SIMO BIT2 
+#define RADIO_PIN_SOMI BIT4 
+#define RADIO_PIN_SCK  BIT3 
 
 //Port Mapping Pins for SPI
-#define RADIO_PMAP_SIMO     P4MAP2//P4MAP2
-#define RADIO_PMAP_SOMI     P4MAP4//P4MAP1
-#define RADIO_PMAP_UCLK     P4MAP3//P4MAP0
+#define RADIO_PMAP_SIMO     P4MAP2
+#define RADIO_PMAP_SOMI     P4MAP4
+#define RADIO_PMAP_UCLK     P4MAP3
 
 //port mapping values
 #define RADIO_PM_SIMO     PM_UCB1SIMO
@@ -32,13 +32,13 @@
 #define RX_START     4
 #define RX_RUNNING   5
 
-  //defines for COMM Daughter board build
-  #define CS_2500_1 BIT1  //BIT1 dev board daughter board!!!
-  #define CS_2500_2 BIT2 //BIT2 dev board daughter board!!!
-  #define CC2500_1_GDO0  BIT0  //BIT0 on dev board daughter board!!!
-  #define CC2500_1_GDO2  BIT1  //BIT1 on dev board daughter board!!!
-  #define CC2500_2_GDO0  BIT2  //BIT2 on dev board daughter board!!!
-  #define CC2500_2_GDO2  BIT3  //BIT3 on dev board daughter board!!!
+//defines for COMM Daughter board build
+#define CS_2500_1 BIT1  //BIT1 dev board daughter board!!!
+#define CS_2500_2 BIT2 //BIT2 dev board daughter board!!!
+#define CC2500_1_GDO0  BIT0  //BIT0 on dev board daughter board!!!
+#define CC2500_1_GDO2  BIT1  //BIT1 on dev board daughter board!!!
+#define CC2500_2_GDO0  BIT2  //BIT2 on dev board daughter board!!!
+#define CC2500_2_GDO2  BIT3  //BIT3 on dev board daughter board!!!
 
 
 enum{CC2500_1=1, CC2500_2=2};

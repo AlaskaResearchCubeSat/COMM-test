@@ -5,9 +5,9 @@ SYMBOLS BY NAME
     40fa UDATA0     _ARC_bus_helper_task
     431a UDATA0     _ARC_bus_task       
    12c10 CODE       _ARC_setup          
-    d3e1 CONST      _ARClib_version     
+    d3f5 CONST      _ARClib_version     
    158f8 CODE       _ARClib_version_Cmd 
-    d3f4 CONST      _ARClib_vstruct     
+    d408 CONST      _ARClib_vstruct     
    15842 CODE       _ARCsearch_Cmd      
    124c4 CODE       _BUS_I2C_release    
     4116 UDATA0     _BUS_INT_events     
@@ -32,15 +32,15 @@ SYMBOLS BY NAME
     411a UDATA0     _BUS_stack          
     5326 THREAD     _BUS_thread_addr_flags
    13a6a CODE       _BUS_timer_timeout_check
-    f774 CODE       _COMM_events        
+    f78a CODE       _COMM_events        
     3e46 UDATA0     _COMM_sys_events    
     2406 UDATA0     _COMM_sys_stack     
     45ba UDATA0     _DMA_events         
-    c59a ISR        _DMA_int            
+    c5ae ISR        _DMA_int            
    14d56 CODE       _ERR_lev_str        
    1539c CODE       _I2C_addr_lookup    
    153e4 CODE       _I2C_addr_revlookup 
-    c804 ISR        _I2C_dat            
+    c818 ISR        _I2C_dat            
     437a UDATA0     _I2C_rx_buf         
     4378 UDATA0     _I2C_rx_in          
     4376 UDATA0     _I2C_rx_out         
@@ -49,21 +49,21 @@ SYMBOLS BY NAME
    13cc0 CODE       _PMM_setVCoreDown   
    13bc6 CODE       _PMM_setVCoreUp     
     c030 ISR        _Port1_ISR          
-    fb4e CODE       _Radio_Interrupt_Setup
-    fc64 CODE       _Radio_Read_Burst_Registers
-    fc28 CODE       _Radio_Read_Registers
-    fcce CODE       _Radio_Read_Status  
-    fd0a CODE       _Radio_Strobe       
-    fd66 CODE       _Radio_Write_Burst_Registers
-    fd34 CODE       _Radio_Write_Registers
-    fdb0 CODE       _Reset_Radio        
+    fb62 CODE       _Radio_Interrupt_Setup
+    fc78 CODE       _Radio_Read_Burst_Registers
+    fc3c CODE       _Radio_Read_Registers
+    fce2 CODE       _Radio_Read_Status  
+    fd1e CODE       _Radio_Strobe       
+    fd7a CODE       _Radio_Write_Burst_Registers
+    fd48 CODE       _Radio_Write_Registers
+    fdc4 CODE       _Reset_Radio        
     3bca UDATA0     _RxTemp             
    12b44 CODE       _SPI_deactivate     
    12b10 CODE       _SPI_master_setup   
    12b2a CODE       _SPI_slave_setup    
     4352 UDATA0     _SUB_events         
-    c660 ISR        _SYS_NMI            
-    fe46 CODE       _TI_CC_Wait         
+    c674 ISR        _SYS_NMI            
+    fe5a CODE       _TI_CC_Wait         
     c00c ISR        _Timer_A2_A0        
     c012 ISR        _Timer_A2_A1        
     3bee UDATA0     _Tx1Buffer          
@@ -71,32 +71,32 @@ SYMBOLS BY NAME
     1c06 IDATA0     _TxBufferPos        
     3bea UDATA0     _TxBytesRemaining   
    15e34 CODE       _UCA2_Getc          
-    c7a2 ISR        _UCA2_ISR           
+    c7b6 ISR        _UCA2_ISR           
     51ca UDATA0     _UCA2_RxBuf         
     526e UDATA0     _UCA2_TxBuf         
    15df8 CODE       _UCA2_TxChar        
    15d1c CODE       _UCA2_init_UART     
-    fe54 CODE       _Write_RF_Settings  
-    f054 CONST      ___RAL_ascii_ctype_map
+    fe68 CODE       _Write_RF_Settings  
+    f068 CONST      ___RAL_ascii_ctype_map
    166aa CODE       ___RAL_ascii_mbtowc 
    166f0 CODE       ___RAL_ascii_wctomb 
-    f22e CONST      ___RAL_c_locale     
-    f12c CONST      ___RAL_c_locale_abbrev_day_names
-    f1a0 CONST      ___RAL_c_locale_abbrev_month_names
-    f1d1 CONST      ___RAL_c_locale_am_pm_indicator
-    f1fc CONST      ___RAL_c_locale_data
-    f1d8 CONST      ___RAL_c_locale_date_format
-    f1ea CONST      ___RAL_c_locale_date_time_format
-    f0f2 CONST      ___RAL_c_locale_day_names
-    f149 CONST      ___RAL_c_locale_month_names
-    f1e1 CONST      ___RAL_c_locale_time_format
-    f0e2 CONST      ___RAL_codeset_ascii
-    f1fb CONST      ___RAL_data_empty_string
-    f1f9 CONST      ___RAL_data_utf8_period
+    f242 CONST      ___RAL_c_locale     
+    f140 CONST      ___RAL_c_locale_abbrev_day_names
+    f1b4 CONST      ___RAL_c_locale_abbrev_month_names
+    f1e5 CONST      ___RAL_c_locale_am_pm_indicator
+    f210 CONST      ___RAL_c_locale_data
+    f1ec CONST      ___RAL_c_locale_date_format
+    f1fe CONST      ___RAL_c_locale_date_time_format
+    f106 CONST      ___RAL_c_locale_day_names
+    f15d CONST      ___RAL_c_locale_month_names
+    f1f5 CONST      ___RAL_c_locale_time_format
+    f0f6 CONST      ___RAL_codeset_ascii
+    f20f CONST      ___RAL_data_empty_string
+    f20d CONST      ___RAL_data_utf8_period
     1c2c IDATA0     ___RAL_global_locale
    16332 CODE       ___RAL_global_locale_category
-    f02b CONST      ___RAL_hex_lc       
-    f01b CONST      ___RAL_hex_uc       
+    f03f CONST      ___RAL_hex_lc       
+    f02f CONST      ___RAL_hex_uc       
    1669c CODE       ___RAL_init_mbstate 
    16296 CODE       ___RAL_isctype      
    16030 CODE       ___RAL_pow10        
@@ -131,11 +131,11 @@ SYMBOLS BY NAME
    16762 CODE       ___float32_isnan    
    16bf4 CODE       ___float32_lt       
    16a5e CODE       ___float32_mul      
-    f236 CONST      ___float32_nan      
+    f24a CONST      ___float32_nan      
    1677a CODE       ___float32_signbit  
    16a52 CODE       ___float32_sub      
    168ae CODE       ___float32_to_int64 
-    f24a CODE       ___getchar          
+    f25e CODE       ___getchar          
    15e72 CODE       ___int16_div        
    15e98 CODE       ___int16_mod        
    15ebe CODE       ___int16_mul        
@@ -145,32 +145,32 @@ SYMBOLS BY NAME
    11964 CODE       ___printf_lock      
    11980 CODE       ___printf_unlock    
    161a4 CODE       ___putc             
-    f23a CODE       ___putchar          
+    f24e CODE       ___putchar          
    16086 CODE       ___strtoul          
-    c78a ISR        ___thunk_ARClib_version_Cmd
-    c786 ISR        ___thunk_ARCsearch_Cmd
+    c79e ISR        ___thunk_ARClib_version_Cmd
+    c79a ISR        ___thunk_ARCsearch_Cmd
     c02c ISR        ___thunk_COMM_events
-    c8f6 ISR        ___thunk___RAL_ascii_mbtowc
-    c8fa ISR        ___thunk___RAL_ascii_wctomb
+    c90a ISR        ___thunk___RAL_ascii_mbtowc
+    c90e ISR        ___thunk___RAL_ascii_wctomb
     c000 ISR        ___thunk___putchar  
-    c78e ISR        ___thunk_errReq_Cmd 
-    c76a ISR        ___thunk_err_decode_arcbus
+    c7a2 ISR        ___thunk_errReq_Cmd 
+    c77e ISR        ___thunk_err_decode_arcbus
     c004 ISR        ___thunk_example_command
     c008 ISR        ___thunk_example_timer_IR
-    c76e ISR        ___thunk_helpCmd    
-    c792 ISR        ___thunk_priorityCmd
+    c782 ISR        ___thunk_helpCmd    
+    c7a6 ISR        ___thunk_priorityCmd
     c01c ISR        ___thunk_readReg    
-    c776 ISR        ___thunk_restCmd    
-    c782 ISR        ___thunk_spiCmd     
-    c79e ISR        ___thunk_stackCmd   
-    c79a ISR        ___thunk_statsCmd   
+    c78a ISR        ___thunk_restCmd    
+    c796 ISR        ___thunk_spiCmd     
+    c7b2 ISR        ___thunk_stackCmd   
+    c7ae ISR        ___thunk_statsCmd   
     c020 ISR        ___thunk_status_Cmd 
     c024 ISR        ___thunk_streamCmd  
     c028 ISR        ___thunk_sub_events 
-    c772 ISR        ___thunk_terminal   
-    c77a ISR        ___thunk_timeCmd    
-    c796 ISR        ___thunk_timesliceCmd
-    c77e ISR        ___thunk_txCmd      
+    c786 ISR        ___thunk_terminal   
+    c78e ISR        ___thunk_timeCmd    
+    c7aa ISR        ___thunk_timesliceCmd
+    c792 ISR        ___thunk_txCmd      
     c018 ISR        ___thunk_writeReg   
    15f66 CODE       ___uint16_div       
    15f7e CODE       ___uint16_mod       
@@ -200,17 +200,17 @@ SYMBOLS BY NAME
     1c02 IDATA0     _beacon_flag        
     1c00 IDATA0     _beacon_on          
     49c0 UDATA0     _buffer_mutex       
-    e7ea CONST      _busAddrSym         
-    c09c ISR        _bus_I2C_isr        
-    c4d8 ISR        _bus_SPI_isr        
+    e7fe CONST      _busAddrSym         
+    c0b0 ISR        _bus_I2C_isr        
+    c4ec ISR        _bus_SPI_isr        
    147b6 CODE       _bus_flags_tostr    
-    c4e4 ISR        _bus_int            
-    c61a ISR        _bus_resend         
+    c4f8 ISR        _bus_int            
+    c62e ISR        _bus_resend         
    147d6 CODE       _bus_version_err_tostr
     1c22 IDATA0     _closed_event       
     1c24 IDATA0     _closed_flag        
     1c1a IDATA0     _cmd_parse_list     
-    c97c CONST      _cmd_tbl            
+    c990 CONST      _cmd_tbl            
     3b76 UDATA0     _comm_task          
    12a9c CODE       _crc16              
    12a6a CODE       _crc7               
@@ -271,8 +271,8 @@ SYMBOLS BY NAME
    14b9e CODE       _error_init         
    14eaa CODE       _error_log_mem_replay
    14bc0 CODE       _error_recording_start
-    f346 CODE       _example_command    
-    f3d6 CODE       _example_timer_IR   
+    f35a CODE       _example_command    
+    f3ea CODE       _example_timer_IR   
    16ef8 CODE       _fabsf              
    16cb6 CODE       _floor              
    16cb6 CODE       _floorf             
@@ -297,13 +297,13 @@ SYMBOLS BY NAME
    162e8 CODE       _isspace            
    162b4 CODE       _isupper            
    16efe CODE       _ldexp              
-    f250 CODE       _main               
+    f264 CODE       _main               
    1388c CODE       _mainLoop           
    1488a CODE       _main_return        
    14f2c CODE       _make_args          
    16718 CODE       _memcpy             
    16728 CODE       _memset             
-    c7f8 ISR        _mmc_ISR            
+    c80c ISR        _mmc_ISR            
    16c20 CODE       _modff              
     4c2e UDATA0     _next_idx           
     1c18 IDATA0     _powerState         
@@ -311,11 +311,11 @@ SYMBOLS BY NAME
    16402 CODE       _printf             
    15aca CODE       _priorityCmd        
    1643e CODE       _puts               
-    fc0e CODE       _radio_SPI_desel    
-    fbf4 CODE       _radio_SPI_sel      
-    fb68 CODE       _radio_SPI_setupt   
+    fc22 CODE       _radio_SPI_desel    
+    fc08 CODE       _radio_SPI_sel      
+    fb7c CODE       _radio_SPI_setupt   
     3e54 UDATA0     _radio_select       
-    f4c8 CODE       _readReg            
+    f4dc CODE       _readReg            
    12da2 CODE       _readTA1            
    14d12 CODE       _record_error       
    14e6a CODE       _report_error       
@@ -324,7 +324,7 @@ SYMBOLS BY NAME
     49c6 UDATA0     _rxbuf              
     4c1e UDATA0     _saved_error        
    14c5c CODE       _set_error_level    
-    fbba CODE       _set_radio_path     
+    fbce CODE       _set_radio_path     
    12ae8 CODE       _setget_ticker_time 
    15730 CODE       _spiCmd             
    16478 CODE       _sprintf            
@@ -335,19 +335,19 @@ SYMBOLS BY NAME
    15be6 CODE       _stateName          
    15c68 CODE       _statsCmd           
     3e4a UDATA0     _status             
-    f53e CODE       _status_Cmd         
+    f552 CODE       _status_Cmd         
    164a8 CODE       _strcmp             
    164c8 CODE       _strcpy             
-    f5e2 CODE       _streamCmd          
+    f5f6 CODE       _streamCmd          
    164de CODE       _strlcpy            
    16738 CODE       _strlen             
    16522 CODE       _strnlen            
    1653c CODE       _strtol             
    165e8 CODE       _strtoul            
-    f66c CODE       _sub_events         
+    f682 CODE       _sub_events         
     1c36 UDATA0     _sub_stack          
     3b92 UDATA0     _sub_task           
-    c5e0 ISR        _task_tick          
+    c5f4 ISR        _task_tick          
    150e4 CODE       _terminal           
     2bd6 UDATA0     _terminal_stack     
     3bae UDATA0     _terminal_task      
@@ -355,11 +355,11 @@ SYMBOLS BY NAME
    1559c CODE       _timeCmd            
    15b7e CODE       _timesliceCmd       
    155b2 CODE       _txCmd              
-    f72e CODE       _tx_data_gen        
+    f744 CODE       _tx_data_gen        
     4af2 UDATA0     _txbuf              
-    f440 CODE       _writeReg           
-    d43a CONST      thread_init_begin   
-    d43e CONST      thread_init_end     
+    f454 CODE       _writeReg           
+    d44e CONST      thread_init_begin   
+    d452 CONST      thread_init_end     
 
 
 SYMBOLS BY VALUE
@@ -394,8 +394,8 @@ SYMBOLS BY VALUE
     1c2a IDATA0     ___ungot            
     1c2c IDATA0     ___RAL_global_locale
     1c36            ___end_IDATA0       
-    1c36 UDATA0     _sub_stack          
     1c36            ___begin_UDATA0     
+    1c36 UDATA0     _sub_stack          
     2406 UDATA0     _COMM_sys_stack     
     2bd6 UDATA0     _terminal_stack     
     3b76 UDATA0     _comm_task          
@@ -444,9 +444,9 @@ SYMBOLS BY VALUE
     526e UDATA0     _UCA2_TxBuf         
     5314 UDATA0     _I2C_stat           
     5324 UDATA0     ___user_format_extender
-    5326            ___begin_THREAD     
     5326            ___end_UDATA0       
     5326 THREAD     _BUS_thread_addr_flags
+    5326            ___begin_THREAD     
     532a            ___end_THREAD       
     8000            ___RAM_Size         
     c000 ISR        ___thunk___putchar  
@@ -461,83 +461,83 @@ SYMBOLS BY VALUE
     c028 ISR        ___thunk_sub_events 
     c02c ISR        ___thunk_COMM_events
     c030 ISR        _Port1_ISR          
-    c09c ISR        _bus_I2C_isr        
-    c4d8 ISR        _bus_SPI_isr        
-    c4e4 ISR        _bus_int            
-    c59a ISR        _DMA_int            
-    c5e0 ISR        _task_tick          
-    c61a ISR        _bus_resend         
-    c660 ISR        _SYS_NMI            
-    c76a ISR        ___thunk_err_decode_arcbus
-    c76e ISR        ___thunk_helpCmd    
-    c772 ISR        ___thunk_terminal   
-    c776 ISR        ___thunk_restCmd    
-    c77a ISR        ___thunk_timeCmd    
-    c77e ISR        ___thunk_txCmd      
-    c782 ISR        ___thunk_spiCmd     
-    c786 ISR        ___thunk_ARCsearch_Cmd
-    c78a ISR        ___thunk_ARClib_version_Cmd
-    c78e ISR        ___thunk_errReq_Cmd 
-    c792 ISR        ___thunk_priorityCmd
-    c796 ISR        ___thunk_timesliceCmd
-    c79a ISR        ___thunk_statsCmd   
-    c79e ISR        ___thunk_stackCmd   
-    c7a2 ISR        _UCA2_ISR           
-    c7f8 ISR        _mmc_ISR            
-    c804 ISR        _I2C_dat            
-    c8f6 ISR        ___thunk___RAL_ascii_mbtowc
-    c8fa ISR        ___thunk___RAL_ascii_wctomb
-    c97c CONST      _cmd_tbl            
-    d3e1 CONST      _ARClib_version     
-    d3f4 CONST      _ARClib_vstruct     
-    d43a CONST      thread_init_begin   
-    d43e CONST      thread_init_end     
-    e7ea CONST      _busAddrSym         
-    f01b CONST      ___RAL_hex_uc       
-    f02b CONST      ___RAL_hex_lc       
-    f054 CONST      ___RAL_ascii_ctype_map
-    f0e2 CONST      ___RAL_codeset_ascii
-    f0f2 CONST      ___RAL_c_locale_day_names
-    f12c CONST      ___RAL_c_locale_abbrev_day_names
-    f149 CONST      ___RAL_c_locale_month_names
-    f1a0 CONST      ___RAL_c_locale_abbrev_month_names
-    f1d1 CONST      ___RAL_c_locale_am_pm_indicator
-    f1d8 CONST      ___RAL_c_locale_date_format
-    f1e1 CONST      ___RAL_c_locale_time_format
-    f1ea CONST      ___RAL_c_locale_date_time_format
-    f1f9 CONST      ___RAL_data_utf8_period
-    f1fb CONST      ___RAL_data_empty_string
-    f1fc CONST      ___RAL_c_locale_data
-    f22e CONST      ___RAL_c_locale     
-    f236 CONST      ___float32_nan      
-    f23a CODE       ___putchar          
-    f24a CODE       ___getchar          
-    f250 CODE       _main               
-    f346 CODE       _example_command    
-    f3d6 CODE       _example_timer_IR   
-    f440 CODE       _writeReg           
-    f4c8 CODE       _readReg            
-    f53e CODE       _status_Cmd         
-    f5e2 CODE       _streamCmd          
-    f66c CODE       _sub_events         
-    f72e CODE       _tx_data_gen        
-    f774 CODE       _COMM_events        
-    fb4e CODE       _Radio_Interrupt_Setup
-    fb68 CODE       _radio_SPI_setupt   
-    fbba CODE       _set_radio_path     
-    fbf4 CODE       _radio_SPI_sel      
-    fc0e CODE       _radio_SPI_desel    
-    fc28 CODE       _Radio_Read_Registers
-    fc64 CODE       _Radio_Read_Burst_Registers
-    fcce CODE       _Radio_Read_Status  
-    fd0a CODE       _Radio_Strobe       
-    fd34 CODE       _Radio_Write_Registers
-    fd66 CODE       _Radio_Write_Burst_Registers
-    fdb0 CODE       _Reset_Radio        
-    fe46 CODE       _TI_CC_Wait         
-    fe54 CODE       _Write_RF_Settings  
-   103c8 CODE       ___vfprintf         
+    c0b0 ISR        _bus_I2C_isr        
+    c4ec ISR        _bus_SPI_isr        
+    c4f8 ISR        _bus_int            
+    c5ae ISR        _DMA_int            
+    c5f4 ISR        _task_tick          
+    c62e ISR        _bus_resend         
+    c674 ISR        _SYS_NMI            
+    c77e ISR        ___thunk_err_decode_arcbus
+    c782 ISR        ___thunk_helpCmd    
+    c786 ISR        ___thunk_terminal   
+    c78a ISR        ___thunk_restCmd    
+    c78e ISR        ___thunk_timeCmd    
+    c792 ISR        ___thunk_txCmd      
+    c796 ISR        ___thunk_spiCmd     
+    c79a ISR        ___thunk_ARCsearch_Cmd
+    c79e ISR        ___thunk_ARClib_version_Cmd
+    c7a2 ISR        ___thunk_errReq_Cmd 
+    c7a6 ISR        ___thunk_priorityCmd
+    c7aa ISR        ___thunk_timesliceCmd
+    c7ae ISR        ___thunk_statsCmd   
+    c7b2 ISR        ___thunk_stackCmd   
+    c7b6 ISR        _UCA2_ISR           
+    c80c ISR        _mmc_ISR            
+    c818 ISR        _I2C_dat            
+    c90a ISR        ___thunk___RAL_ascii_mbtowc
+    c90e ISR        ___thunk___RAL_ascii_wctomb
+    c990 CONST      _cmd_tbl            
+    d3f5 CONST      _ARClib_version     
+    d408 CONST      _ARClib_vstruct     
+    d44e CONST      thread_init_begin   
+    d452 CONST      thread_init_end     
+    e7fe CONST      _busAddrSym         
+    f02f CONST      ___RAL_hex_uc       
+    f03f CONST      ___RAL_hex_lc       
+    f068 CONST      ___RAL_ascii_ctype_map
+    f0f6 CONST      ___RAL_codeset_ascii
+    f106 CONST      ___RAL_c_locale_day_names
+    f140 CONST      ___RAL_c_locale_abbrev_day_names
+    f15d CONST      ___RAL_c_locale_month_names
+    f1b4 CONST      ___RAL_c_locale_abbrev_month_names
+    f1e5 CONST      ___RAL_c_locale_am_pm_indicator
+    f1ec CONST      ___RAL_c_locale_date_format
+    f1f5 CONST      ___RAL_c_locale_time_format
+    f1fe CONST      ___RAL_c_locale_date_time_format
+    f20d CONST      ___RAL_data_utf8_period
+    f20f CONST      ___RAL_data_empty_string
+    f210 CONST      ___RAL_c_locale_data
+    f242 CONST      ___RAL_c_locale     
+    f24a CONST      ___float32_nan      
+    f24e CODE       ___putchar          
+    f25e CODE       ___getchar          
+    f264 CODE       _main               
+    f35a CODE       _example_command    
+    f3ea CODE       _example_timer_IR   
+    f454 CODE       _writeReg           
+    f4dc CODE       _readReg            
+    f552 CODE       _status_Cmd         
+    f5f6 CODE       _streamCmd          
+    f682 CODE       _sub_events         
+    f744 CODE       _tx_data_gen        
+    f78a CODE       _COMM_events        
+    fb62 CODE       _Radio_Interrupt_Setup
+    fb7c CODE       _radio_SPI_setupt   
+    fbce CODE       _set_radio_path     
+    fc08 CODE       _radio_SPI_sel      
+    fc22 CODE       _radio_SPI_desel    
+    fc3c CODE       _Radio_Read_Registers
+    fc78 CODE       _Radio_Read_Burst_Registers
+    fce2 CODE       _Radio_Read_Status  
+    fd1e CODE       _Radio_Strobe       
+    fd48 CODE       _Radio_Write_Registers
+    fd7a CODE       _Radio_Write_Burst_Registers
+    fdc4 CODE       _Reset_Radio        
+    fe5a CODE       _TI_CC_Wait         
+    fe68 CODE       _Write_RF_Settings  
    103c8 CODE       ___vfprintf_float_long_long
+   103c8 CODE       ___vfprintf         
    11602 CODE       _ctl_private_add_to_task_list
    11650 CODE       _ctl_private_remove_from_task_list
    1168a CODE       _ctl_private_reschedule
@@ -718,8 +718,8 @@ SYMBOLS BY VALUE
    16c20 CODE       _modff              
    16cb6 CODE       _floor              
    16cb6 CODE       _floorf             
-   16d86 CODE       _fmod               
    16d86 CODE       _fmodf              
+   16d86 CODE       _fmod               
    16ef8 CODE       _fabsf              
    16efe CODE       _ldexp              
    16f3a CODE       _frexp              

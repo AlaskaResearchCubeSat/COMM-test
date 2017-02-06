@@ -31,9 +31,9 @@ void radio_SPI_setupt(void){
   //lock the Port map module
   PMAPKEYID=0;
 
-//SPI setup for MSP430f6779A is done on Port 3
+//SPI setup for MSP430f6779A is done on Port 4
 //Set up peripherals for COMM MSP
-//Radio SPI on P3: P4.2=UCB1SIMO, P4.4=USB1SOMI, P4.3=UCB1CLK
+//Radio SPI on P4: P4.2=UCB1SIMO, P4.4=USB1SOMI, P4.3=UCB1CLK
 //NOTE Redefined all SPI Setup on the UCA3 SPI port, COMM for ARC2 uses UCB1
 
   UCB1CTLW0 |= UCSWRST;                           // Put UCB1 into reset
@@ -48,6 +48,7 @@ void radio_SPI_setupt(void){
 
   //Radio CS P5.1=CC2500_CS_1 (ENABLE1), P5.2=CC2500_CS_2 (ENABLE2), 
   //Initial state for CS is High, CS pulled low to initiate SPI
+  //TODO replace with functions sel and desel
   P5OUT |= CS_2500_1;                     // Ensure CS for CC2500_1 is disabled
   P5OUT |= CS_2500_2;                     // Ensure CS for CC2500_2 is disabled
 
@@ -59,8 +60,6 @@ void radio_SPI_setupt(void){
 
   //Set pins for SPI usage
   P4SEL0 |= RADIO_PINS_SPI;
-
-  //UC1IE = UCB1TXIE|UCB1RXIE;                      //Enable transmit and receive interrupt
 }
 
 //******************************************* radio handling functions 

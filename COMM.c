@@ -136,11 +136,6 @@ void COMM_events(void *p) __toplevel{
   Radio_Strobe(TI_CCxxx0_SRX, CC2500_1);          //Initialize CCxxxx in Rx mode
   Radio_Strobe(TI_CCxxx0_SIDLE, CC2500_2);          //Initialize CCxxxx in Rx mode
 
-
-  // Need to wait first for RF on command from CDH.  Nothing happens until we get that command!
-  // After RF on command we can send Beacon data.
-  // Would like to create some test here where we read radio status and make sure it is in the correct state.
-
   ctl_events_init(&COMM_sys_events,0);                 //Initialize Event
 
   //endless loop
@@ -344,10 +339,6 @@ void COMM_events(void *p) __toplevel{
 }
 
 
-
-
-
-
 void PrintBuffer(char *dat, unsigned int len){
    int i;
 
@@ -387,7 +378,7 @@ void Port1_ISR (void) __ctl_interrupt[PORT1_VECTOR]
 {
    if (P1IFG & CC2500_1_GDO0){ // GDO0 is set up to assert when RX FIFO is greater than FIFO_THR.  This is an RX function only
     
-        P1IFG &= ~CC2500_1_GDO0;
+        P1IFG &= ~CC2500_1_GDO0; // reset flag
         //ctl_events_set_clear(&COMM_evt,CC1101_EV_RX_READ,0);
     } 
 
@@ -410,31 +401,30 @@ void Port1_ISR (void) __ctl_interrupt[PORT1_VECTOR]
         switch(state)
         {
             case IDLE:
-                 //P1IFG &= ~CC1101_GDO2;
+                 P1IFG &= ~CC2500_1_GDO2; // reset Rx or TX flag ?
                  break;
 
             case TX_START:  //Called on falling edge of GDO2, Tx FIFO < threshold, Radio in TX mode, Packet in progress
-                 state = TX_RUNNING;
-                // P1IFG &= ~CC1101_GDO2;
-               //  ctl_events_set_clear(&COMM_evt,CC1101_EV_TX_THR,0);
+                  state = TX_RUNNING;
+                  P1IFG &= ~CC2500_1_GDO2;
+               //  ctl_events_set_clear(&COMM_evt,CC1101_EV_TX_THR,0); // what is CC1101_EV_TX_THR ?? 
+                //  CTL_event_set_clear(&COMM_evt,cc2500_1_EV_TX_THR,radio_select);
                  break;
             
             case TX_RUNNING: //Called on falling edge of GDO2, Tx FIFO < threshold, Radio in TX mode, Packet in progress
-                // P2IFG &= ~CC1101_GDO2;
+                  P1IFG &= ~CC2500_1_GDO2;
             //     ctl_events_set_clear(&COMM_evt,CC1101_EV_TX_THR,0);
                  break;
 
             case TX_END:  //Called on falling edge of GDO2, Tx FIFO < threshold, Radio in TX mode, Last part of packet to transmit
                  state = IDLE;
-                // P1IFG &= ~CC1101_GDO2;
+                  P1IFG &= ~CC2500_1_GDO2;
              //    ctl_events_set_clear(&COMM_evt,CC1101_EV_TX_END,0);
                  break;
 
             default:
-              //P1IFG &= ~CC1101_GDO2;
+               P1IFG &= ~CC2500_1_GDO2;
               break;          
-  
         }
     }
-
 }

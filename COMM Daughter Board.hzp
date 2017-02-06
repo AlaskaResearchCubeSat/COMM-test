@@ -25,9 +25,10 @@
       <file file_name="commands.c" />
       <file file_name="COMM.c" />
       <file file_name="COMM.h" />
-      <file file_name="COMM_errors.h" />
       <file file_name="Radio_functions.c" />
       <file file_name="Radio_functions.h" />
+      <file file_name="AX25_EncodeDecode.c" />
+      <file file_name="AX25_EncodeDecode.h" />
     </folder>
     <folder Name="System Files">
       <configuration Name="Common" filter="xml" />
