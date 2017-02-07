@@ -15,6 +15,8 @@ Then function must be added to the "const CMD_SPEC cmd_tbl[]={{"help"," [command
 #include <i2c.h>
 #include <Radio_functions.h>
 #include "COMM.h"
+
+extern CTL_EVENT_SET_t COMM_evt; // define because this lives in COMM.c
 //********************************************************************  Example commands (not really comm related ) *********************************************
 int example_command(char **argv,unsigned short argc){
   int i,j;
@@ -161,8 +163,7 @@ char status1, status2, radio, state1, state2;
 return 0;
 }
 
-
-// streams data from radio argv[1]=ADR ,argv[2]= mode, argv[3]= val
+// streams data from radio argv[1]=ADR 
 //TODO   (update for second radio)
 int streamCmd(char **argv,unsigned short argc){
 // input checking 
@@ -182,9 +183,9 @@ int streamCmd(char **argv,unsigned short argc){
       data_seed=1;
     }
   }
-  
+ 
   // input case statment to pick from enum table in COMM.h
-  ctl_events_set_clear(&COMM_sys_events,CC1101_EV_TX_START,0); 
+  ctl_events_set_clear(&COMM_evt,CC1101_EV_TX_START,0); 
   
   printf("Push any key to stop\r\n");
   getchar(); // waits for any char 

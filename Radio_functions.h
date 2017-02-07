@@ -41,7 +41,7 @@
 #define CC2500_2_GDO2  BIT3  //BIT3 on dev board daughter board!!!
 
 
-enum{CC2500_1=1, CC2500_2=2};
+enum{CC1101=0,CC2500_1=1, CC2500_2=2};
 //Create event flags for the radios
 #define TxThrBytes 30   
 #define RxThrBytes 30

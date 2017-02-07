@@ -5,8 +5,9 @@
 #include <terminal.h>      
 #include <string.h>         // added for memeset function
 #include <UCA2_uart.h>        // UART setup 
-#include "pins.h"             // linked in bare_bones solution 
-#include "COMM.h"        // linked in bare_bones solution 
+#include "pins.h"         
+#include "Radio_functions.h"      
+#include "COMM.h"  
 
 
 CTL_TASK_t terminal_task,sub_task,comm_task; // name your task (first thing to do when setting up a new task (1))
@@ -64,9 +65,9 @@ void main(void){
 
 
   // creating the tasks
-  ctl_task_run(&terminal_task,BUS_PRI_LOW,terminal,"Mike's Awesome COMM Code","terminal",sizeof(terminal_stack)/sizeof(terminal_stack[0])-2,terminal_stack-1,0);
-  ctl_task_run(&comm_task,BUS_PRI_NORMAL,COMM_events,NULL,"COMM_SYS_events",sizeof(COMM_sys_stack)/sizeof(COMM_sys_stack[0])-2,COMM_sys_stack-1,0);
-  ctl_task_run(&sub_task,BUS_PRI_HIGH,sub_events,NULL,"SUB_events",sizeof(sub_stack)/sizeof(sub_stack[0])-2,sub_stack-1,0);
+  ctl_task_run(&terminal_task, BUS_PRI_LOW,    terminal,    "Mike's Awesome COMM Code", "terminal",        sizeof(terminal_stack)/sizeof(terminal_stack[0])-2,   terminal_stack-1,0);
+  ctl_task_run(&comm_task,     BUS_PRI_NORMAL, COMM_events, NULL,                       "COMM_SYS_events", sizeof(COMM_sys_stack)/sizeof(COMM_sys_stack[0])-2,   COMM_sys_stack-1,0);
+  ctl_task_run(&sub_task,      BUS_PRI_HIGH,   sub_events,  NULL,                       "SUB_events",      sizeof(sub_stack)/sizeof(sub_stack[0])-2,             sub_stack-1,0);
 
   //main loop <-- this is an ARCbus function 
   mainLoop(); 
