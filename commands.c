@@ -15,6 +15,8 @@ Then function must be added to the "const CMD_SPEC cmd_tbl[]={{"help"," [command
 #include <i2c.h>
 #include <Radio_functions.h>
 #include "COMM.h"
+#include "AX25_EncodeDecode.h"
+#include "COMM_Events.h"
 
 extern CTL_EVENT_SET_t COMM_evt; // define because this lives in COMM.c
 //********************************************************************  Example commands (not really comm related ) *********************************************
@@ -40,6 +42,8 @@ int example_command(char **argv,unsigned short argc){
     printf("}\r\n\r\n");
     printf("argc = %i\r\n",argc);
   }
+  i=strtol(argv[1],0,0);
+  printf("the string says %p\r\n",i);
   return 0;
 }
 /*********************************************************** Using the Timer_A1 ***************************************************************
@@ -196,14 +200,49 @@ int streamCmd(char **argv,unsigned short argc){
   return 0;
 }
 
+/*
+int power(char **argv,unsigned short argc)
+{
+char radio_power
+
+radio_power = argv[1];
+
+paTable_CC2500[] = {radio_power}
+
+
+}
+*/
+
+int transmit_test(char **argv,unsigned short argc)
+{
+int i=0;
+for(i=0;i<19;i++){
+Tx1Buffer[i]=Packet_NoBit[i];
+}
+while(getchar() != EOF){
+ ctl_events_set_clear(&COMM_evt,CC2500_1_EV_TX_START,0);
+ __delay_cycles(100);  
+  P7OUT ^= BIT7;
+  }
+}
+
+ 
+
+
+
+
+
+
 //table of commands with help
 const CMD_SPEC cmd_tbl[]={{"help"," [command]",helpCmd},
                    {"timer_IR","[time]...\r\n\tExample command to show how the timer can be used as an interupt",example_timer_IR},
                    {"ex","[arg1] [arg2] ...\r\n\t""Example command to show how arguments are passed",example_command},
-                   {"radio status","",status_Cmd},
+                   {"radio_status","",status_Cmd},
                    {"stream","[zeros|ones|[value [val]]]\r\n""Stream data from radio\n\r",streamCmd},
                    {"writereg","Writes data to radio register\r\n [radio] [adress] [data]",writeReg},
                    {"readreg","reads data from a radio register\r\n [radio] [adrss]",readReg},
+                   {"transmit_test","Testing tranmission of data\r\n [data][event] ", transmit_test},
+                   //{"power","",power},
                    ARC_COMMANDS,CTL_COMMANDS,// ERROR_COMMANDS,
                    //end of list
                    {NULL,NULL,NULL}};

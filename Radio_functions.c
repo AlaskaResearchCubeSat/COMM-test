@@ -7,6 +7,8 @@
 //char paTable_CC1101[] = {0x84};  //corresponds to +5dBm
 //char paTable_CC1101[] = {0xC8};  //corresponds to +7dBm
 char paTable_CC1101[] = {0xC0};  //corresponds to +10dBm 
+char paTable_CC2500[] = {0xC0};
+
 char paTableLen=1;
 int Tx_Flag;
 

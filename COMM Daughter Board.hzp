@@ -29,6 +29,10 @@
       <file file_name="Radio_functions.h" />
       <file file_name="AX25_EncodeDecode.c" />
       <file file_name="AX25_EncodeDecode.h" />
+      <file file_name="COMM_Events.c" />
+      <file file_name="COMM_Events.h" />
+      <file file_name="SD-dat.c" />
+      <file file_name="SD-dat.h" />
     </folder>
     <folder Name="System Files">
       <configuration Name="Common" filter="xml" />
