@@ -1,8 +1,6 @@
 #ifndef __Radio_functions_H
 #define __Radio_functions_H
 
-//Code for prototype Communication System for the Alaska Research CubeSat (ARC) as developed by the Alaska Space Grant Program
-//Samuel Vanderwaal, APril 2012
 
 //Radio Pins for SPI 
 //for ARC2 change these defines for ARC2 ICD compliance 

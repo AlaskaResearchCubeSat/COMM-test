@@ -134,7 +134,7 @@ int readReg(char **argv,unsigned short argc){
       return -2;
     }
   else {
-    printf("Radio = %i\r\n",radio);
+    printf("Radio = %i\r\n",radio_select);
     regaddr=strtoul(argv[2],NULL,0);
     result= Radio_Read_Registers(regaddr, radio_select);
     printf("Register 0x%02x = 0x%02x [regaddr, regdata]\r\n", regaddr, result);
@@ -200,18 +200,15 @@ int streamCmd(char **argv,unsigned short argc){
   return 0;
 }
 
-/*
 int power(char **argv,unsigned short argc)
 {
-char radio_power
-
-radio_power = argv[1];
-
-paTable_CC2500[] = {radio_power}
-
-
+int radio_power;
+radio_power = strtoul(argv[2],NULL,0); //Converts the inputed string in argv[2] to an int or hex value
+set_radio_path(argv[1]); //select the radio
+Radio_Write_Registers(TI_CCxxx0_PATABLE, radio_power, radio_select); //Write to the power register
+printf("The power selected is %x\r\n", radio_power);
+printf("The radio selected is radio CC2500_%i radio  \r\n", radio_select);
 }
-*/
 
 int transmit_test(char **argv,unsigned short argc)
 {
@@ -221,7 +218,7 @@ Tx1Buffer[i]=Packet_NoBit[i];
 }
 while(getchar() != EOF){
  ctl_events_set_clear(&COMM_evt,CC2500_1_EV_TX_START,0);
- __delay_cycles(100);  
+ __delay_cycles(10000);  
   P7OUT ^= BIT7;
   }
 }
@@ -242,7 +239,7 @@ const CMD_SPEC cmd_tbl[]={{"help"," [command]",helpCmd},
                    {"writereg","Writes data to radio register\r\n [radio] [adress] [data]",writeReg},
                    {"readreg","reads data from a radio register\r\n [radio] [adrss]",readReg},
                    {"transmit_test","Testing tranmission of data\r\n [data][event] ", transmit_test},
-                   //{"power","",power},
+                   {"power","Changes the transmit power of the radio [radio][PATABLE Value] ex. CC2500_1 0x8D",power},
                    ARC_COMMANDS,CTL_COMMANDS,// ERROR_COMMANDS,
                    //end of list
                    {NULL,NULL,NULL}};

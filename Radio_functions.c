@@ -7,7 +7,7 @@
 //char paTable_CC1101[] = {0x84};  //corresponds to +5dBm
 //char paTable_CC1101[] = {0xC8};  //corresponds to +7dBm
 char paTable_CC1101[] = {0xC0};  //corresponds to +10dBm 
-char paTable_CC2500[] = {0xC0};
+char paTable_CC2500[] = {0xFF};
 
 char paTableLen=1;
 int Tx_Flag;
@@ -373,7 +373,8 @@ Radio_Write_Registers(TI_CCxxx0_FSCAL0,   0x11, CC2500_1);  // Frequency synthes
 Radio_Write_Registers(TI_CCxxx0_FSTEST,   0x59, CC2500_1);  // Frequency synthesizer cal.
 Radio_Write_Registers(TI_CCxxx0_TEST2,    0x88, CC2500_1);  // Various test settings.
 Radio_Write_Registers(TI_CCxxx0_TEST1,    0x31, CC2500_1);  // Various test settings.
-Radio_Write_Registers(TI_CCxxx0_TEST0,    0x0B, CC2500_1);  // Various test settings.   
+Radio_Write_Registers(TI_CCxxx0_TEST0,    0x0B, CC2500_1);  // Various test settings.
+Radio_Write_Registers(TI_CCxxx0_PATABLE,  0xFF, CC2500_1);    
 break;
 
 case CC2500_2:
