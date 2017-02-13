@@ -210,6 +210,110 @@ printf("The power selected is %x\r\n", radio_power);
 printf("The radio selected is radio CC2500_%i radio  \r\n", radio_select);
 }
 
+
+//Better power function using enum(set up in radio radiofunctions.h)
+
+int powerbetter(char **argv,unsigned short argc)
+{
+int radio_level;
+enum power_level power;
+set_radio_path(argv[1]); //select the radio
+power=strtoul(argv[2],NULL,0);
+ if (power ==  power1){
+  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0x00, radio_select);
+  printf("The power selected is -55 dBm\r\n" );
+  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
+  }
+  else if(power ==  power2){
+  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0x50, radio_select);
+  printf("The power selected is -30 dBm\r\n" );
+  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
+  }
+    else if(power ==  power3){
+  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0x44, radio_select);
+  printf("The power selected is -28 dBm\r\n" );
+  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
+  }
+    else if(power ==  power4){
+  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0xC0, radio_select);
+  printf("The power selected is -26 dBm\r\n" );
+  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
+  }
+    else if(power ==  power5){
+  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0x84, radio_select);
+  printf("The power selected is -24 dBm\r\n" );
+  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
+  }
+    else if(power ==  power6){
+  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0x81, radio_select);
+  printf("The power selected is -22 dBm\r\n" );
+  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
+  }
+    else if(power ==  power7){
+  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0x46, radio_select);
+  printf("The power selected is -20 dBm\r\n" );
+  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
+  }
+    else if(power ==  power8){
+  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0x93, radio_select);
+  printf("The power selected is -18 dBm\r\n" );
+  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
+  }
+    else if(power ==  power9){
+  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0x55, radio_select);
+  printf("The power selected is -16 dBm\r\n" );
+  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
+  }
+    else if(power ==  power10){
+  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0x8D, radio_select);
+  printf("The power selected is -14 dBm\r\n" );
+  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
+  }
+    else if(power ==  power11){
+  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0xC6, radio_select);
+  printf("The power selected is -12 dBm\r\n" );
+  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
+  }
+    else if(power ==  power12){
+  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0x97, radio_select);
+  printf("The power selected is -10 dBm\r\n" );
+  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
+  }
+    else if(power ==  power13){
+  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0x6E, radio_select);
+  printf("The power selected is -8 dBm\r\n" );
+  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
+  }
+    else if(power ==  power14){
+  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0x7F, radio_select);
+  printf("The power selected is -6 dBm\r\n" );
+  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
+  }
+  else if(power ==  power15){
+  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0xA9, radio_select);
+  printf("The power selected is -4 dBm\r\n" );
+  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
+  }
+    else if(power ==  power16){
+  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0xBB, radio_select);
+  printf("The power selected is -2 dBm\r\n" );
+  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
+  }
+    else if(power ==  power17){
+  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0xFE, radio_select);
+  printf("The power selected is -0 dBm\r\n" );
+  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
+  }
+    else if(power ==  power18){
+  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0xFF, radio_select);
+  printf("The power selected is +1 dBm\r\n" );
+  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
+  }
+  else{
+  printf("error not a valid power");
+  }
+}
+
 int transmit_test(char **argv,unsigned short argc)
 {
 int i=0;
@@ -218,17 +322,12 @@ Tx1Buffer[i]=Packet_NoBit[i];
 }
 while(getchar() != EOF){
  ctl_events_set_clear(&COMM_evt,CC2500_1_EV_TX_START,0);
- __delay_cycles(10000);  
+ __delay_cycles(1000);  
   P7OUT ^= BIT7;
   }
 }
 
  
-
-
-
-
-
 
 //table of commands with help
 const CMD_SPEC cmd_tbl[]={{"help"," [command]",helpCmd},
@@ -240,7 +339,8 @@ const CMD_SPEC cmd_tbl[]={{"help"," [command]",helpCmd},
                    {"readreg","reads data from a radio register\r\n [radio] [adrss]",readReg},
                    {"transmit_test","Testing tranmission of data\r\n [data][event] ", transmit_test},
                    {"power","Changes the transmit power of the radio [radio][PATABLE Value] ex. CC2500_1 0x8D",power},
-                   ARC_COMMANDS,CTL_COMMANDS,// ERROR_COMMANDS,
+                   {"powerbetter","Changes the transmit power of the radio [radio][power] ex. CC2500_1 -24",powerbetter},
+                   ARC_COMMANDS,CTL_COMMANDS,// ERROR_COMMANDS
                    //end of list
                    {NULL,NULL,NULL}};
 

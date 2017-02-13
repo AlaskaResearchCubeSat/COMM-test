@@ -38,6 +38,7 @@
 #define CC2500_2_GDO0  BIT2  //BIT2 on dev board daughter board!!!
 #define CC2500_2_GDO2  BIT3  //BIT3 on dev board daughter board!!!
 
+enum power_level{power1=-55,power2=-30, power3= -28, power4 = -26, power5 = -24, power6 =-22, power7=-20, power8=-18, power9=-16,power10=-14,power11=12, power12=-10, power13=-8, power14=-6, power15=-4, power16=-2, power17=0, power18=1};
 
 enum{CC1101=0,CC2500_1=1, CC2500_2=2};
 //Create event flags for the radios
