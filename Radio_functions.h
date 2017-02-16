@@ -31,12 +31,19 @@
 #define RX_RUNNING   5
 
 //defines for COMM Daughter board build
-#define CS_2500_1 BIT1  //BIT1 dev board daughter board!!!
-#define CS_2500_2 BIT2 //BIT2 dev board daughter board!!!
-#define CC2500_1_GDO0  BIT0  //BIT0 on dev board daughter board!!!
-#define CC2500_1_GDO2  BIT1  //BIT1 on dev board daughter board!!!
-#define CC2500_2_GDO0  BIT2  //BIT2 on dev board daughter board!!!
-#define CC2500_2_GDO2  BIT3  //BIT3 on dev board daughter board!!!
+#define CS_2500_1           BIT1  //BIT1 dev board daughter board!!!
+#define CS_2500_2           BIT2 //BIT2 dev board daughter board!!!  #define CC2500_1_GDO0  BIT0  //BIT0 on dev board daughter board!!!
+
+#define CC2500_1_GDO0       BIT0  //P1.0
+#define CC2500_1_GDO2       BIT1  //P1.1
+#define CC2500_2_GDO0       BIT2  //P1.2
+#define CC2500_2_GDO2       BIT3  //P1.3
+
+//P1IV definitions. These MUST match to the pins above!!!!!
+#define CC2500_1_GDO0_IV    P1IV_P1IFG0  //inturrupt on P1.0
+#define CC2500_1_GDO2_IV    P1IV_P1IFG0  //inturrupt on P1.1
+#define CC2500_2_GDO0_IV    P1IV_P1IFG0  //inturrupt on P1.2
+#define CC2500_2_GDO2_IV    P1IV_P1IFG0  //inturrupt on P1.3
 
 enum power_level{power1=-55,power2=-30, power3= -28, power4 = -26, power5 = -24, power6 =-22, power7=-20, power8=-18, power9=-16,power10=-14,power11=12, power12=-10, power13=-8, power14=-6, power15=-4, power16=-2, power17=0, power18=1};
 
@@ -65,7 +72,6 @@ void RF_Send_Packet(unsigned char *txBuffer, int size, int radio_select);
 void Write_RF_Settings(int radio_select); 
 
 char RF_Receive_Packet(char *, char *, char);//TODO update This seems to have no function in radio_functions.c ????
-
 
 //Radio addressing var and function
 extern int radio_select;
