@@ -379,10 +379,6 @@ void COMM_events(void *p) __toplevel{
 
 */
 
-  if(e&DO_NOTHING){
-    // for testing to kill CC2500_2_ functionality 
-  }
-
   //******************************************************************************************* COMM_EVT_CC2500_1_RX_READ
     if(e & COMM_EVT_CC2500_1_RX_READ){                  //READ RX FIFO
       // Triggered by GDO0 interrupt     
@@ -612,7 +608,6 @@ void Port1_ISR (void) __ctl_interrupt[PORT1_VECTOR]{
     // RX state
         case CC2500_2_GDO0_IV: // GDO0 is set up to assert when RX FIFO is greater than FIFO_THR.  This is an RX function only
             //ctl_events_set_clear(&COMM_evt,COMM_EVT_CC2500_2_RX_READ,0);
-             ctl_events_set_clear(&COMM_evt,DO_NOTHING,0);  // <-- for testing on radio
 
         break; 
     //TX state
@@ -627,19 +622,16 @@ void Port1_ISR (void) __ctl_interrupt[PORT1_VECTOR]{
                 case TX_START:  //Called on falling edge of GDO2, Tx FIFO < threshold, Radio in TX mode, Packet in progress
                       state = TX_RUNNING;
                       //ctl_events_set_clear(&COMM_evt,COMM_EVT_CC2500_2_TX_THR,0); 
-                      ctl_events_set_clear(&COMM_evt,DO_NOTHING,0); 
 
                      break;
                 
                 case TX_RUNNING: //Called on falling edge of GDO2, Tx FIFO < threshold, Radio in TX mode, Packet in progress
                       //ctl_events_set_clear(&COMM_evt,COMM_EVT_CC2500_2_TX_THR,0); 
-                      ctl_events_set_clear(&COMM_evt,DO_NOTHING,0); 
 
                      break;
                 case TX_END:  //Called on falling edge of GDO2, Tx FIFO < threshold, Radio in TX mode, Last part of packet to transmit
                      state = IDLE;
                      // ctl_events_set_clear(&COMM_evt,COMM_EVT_CC2500_2_TX_END,0);
-                      ctl_events_set_clear(&COMM_evt,DO_NOTHING,0); 
 
                      break;
 
