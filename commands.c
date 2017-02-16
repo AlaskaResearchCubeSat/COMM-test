@@ -189,7 +189,7 @@ int streamCmd(char **argv,unsigned short argc){
   }
  
   // input case statment to pick from enum table in COMM.h
-  ctl_events_set_clear(&COMM_evt,CC1101_EV_TX_START,0); 
+  ctl_events_set_clear(&COMM_evt,COMM_EVT_CC1101_TX_START,0); 
   
   printf("Push any key to stop\r\n");
   getchar(); // waits for any char 
@@ -321,7 +321,7 @@ for(i=0;i<19;i++){
 Tx1Buffer[i]=Packet_NoBit[i];
 }
 while(getchar() != EOF){
- ctl_events_set_clear(&COMM_evt,CC2500_1_EV_TX_START,0);
+ ctl_events_set_clear(&COMM_evt,COMM_EVT_CC2500_1_TX_START,0);
  __delay_cycles(1000);  
   P7OUT ^= BIT7;
   }
