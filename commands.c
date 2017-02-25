@@ -14,9 +14,12 @@ Then function must be added to the "const CMD_SPEC cmd_tbl[]={{"help"," [command
 #include <SDlib.h>
 #include <i2c.h>
 #include <Radio_functions.h>
+#include <UCA2_uart.h>  
 #include "COMM.h"
 #include "AX25_EncodeDecode.h"
 #include "COMM_Events.h"
+
+
 
 extern CTL_EVENT_SET_t COMM_evt; // define because this lives in COMM.c
 //********************************************************************  Example commands (not really comm related ) *********************************************
@@ -314,20 +317,17 @@ power=strtoul(argv[2],NULL,0);
   }
 }
 
-int transmit_test(char **argv,unsigned short argc)
-{
-int i=0;
-for(i=0;i<19;i++){
-Tx1Buffer[i]=Packet_NoBit[i];
-}
-while(getchar() != EOF){
- ctl_events_set_clear(&COMM_evt,COMM_EVT_CC2500_1_TX_START,0);
- __delay_cycles(1000);  
-  P7OUT ^= BIT7;
+int transmit_test(char **argv,unsigned short argc){
+  int i=0;
+  for(i=0;i<19;i++){
+    Tx1Buffer[i]=Packet_NoBit[i];
   }
+ while(UCA2_CheckKey()==EOF){
+   ctl_events_set_clear(&COMM_evt,COMM_EVT_CC2500_1_TX_START,0);
+  BUS_delay_usec(50);  // delay in ms 
+   }
 }
 
- 
 
 //table of commands with help
 const CMD_SPEC cmd_tbl[]={{"help"," [command]",helpCmd},

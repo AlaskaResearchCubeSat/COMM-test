@@ -34,13 +34,11 @@ int __getchar(void){
 //******************************************* Main loop****************************************************************************************************************
 void main(void){
   //turn on LED's this will flash the LED's during startup
-  P7OUT=0xFF;
+  P7OUT=0x01;
   P7DIR=0xFF;
-  //init complete turn on LED0 and all others off
-  P7OUT=0x1F;
   
   //Initlize the comm communication port for the SPI 
-  radio_SPI_setupt(); // Do this before ARC_setup because of PM 
+  radio_SPI_setup(); // Do this before ARC_setup because of PM 
 
   //DO this first (but not before PM)
   ARC_setup(); 

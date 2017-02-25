@@ -59,7 +59,7 @@ extern short beacon_on, beacon_flag;
   extern unsigned char RxBuffer[];
   extern unsigned int Tx1Buffer_Len, TxBufferPos, TxBytesRemaining;
   extern unsigned int RxBuffer_Len,  RxBufferPos, RxBytesRemaining;
-  extern unsigned int state, small_packet, PktLenUpper, PktLenLower, PktLen;
+  extern unsigned int state, small_packet, PkftLenUpper, PktLenLower, PktLen;
   extern BOOL INFINITE;
   extern char temp_countTX, temp_countRX, RxFIFOLen;
   extern int Tx_Flag; //used in RF_Send_Packet not sure why

@@ -40,10 +40,10 @@
 #define CC2500_2_GDO2       BIT3  //P1.3
 
 //P1IV definitions. These MUST match to the pins above!!!!!
-#define CC2500_1_GDO0_IV    P1IV_P1IFG0  //inturrupt on P1.0
-#define CC2500_1_GDO2_IV    P1IV_P1IFG0  //inturrupt on P1.1
-#define CC2500_2_GDO0_IV    P1IV_P1IFG0  //inturrupt on P1.2
-#define CC2500_2_GDO2_IV    P1IV_P1IFG0  //inturrupt on P1.3
+#define CC2500_1_GDO0_IV    P1IV_P1IFG0  //inturupt on P1.0
+#define CC2500_1_GDO2_IV    P1IV_P1IFG1  //inturupt on P1.1
+#define CC2500_2_GDO0_IV    P1IV_P1IFG2  //inturupt on P1.2
+#define CC2500_2_GDO2_IV    P1IV_P1IFG3  //inturupt on P1.3
 
 enum power_level{power1=-55,power2=-30, power3= -28, power4 = -26, power5 = -24, power6 =-22, power7=-20, power8=-18, power9=-16,power10=-14,power11=12, power12=-10, power13=-8, power14=-6, power15=-4, power16=-2, power17=0, power18=1};
 
@@ -57,7 +57,7 @@ void TXRX(void *);
 void radio_interrupts(void);
 void Build_Packet(int);
 void TI_CC_Wait(unsigned int);
-void radio_SPI_setupt(void);
+void radio_SPI_setup(void);
 int set_radio_path(char *);
 
 

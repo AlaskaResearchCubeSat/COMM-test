@@ -2,7 +2,7 @@
 <session>
  <Bookmarks/>
  <Breakpoints>
-  <BreakpointListItem line="46" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="2" counter="0" isFunctionBreakpoint="false" filename="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/COMM.h" expression="" />
+  <BreakpointListItem line="452" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="2" counter="0" isFunctionBreakpoint="false" filename="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/COMM.c" expression="" />
  </Breakpoints>
  <EEMRegistersWindow>
   <EEMRegisters moduleClockControl="841d" generalClockControl="2e" />
@@ -39,7 +39,7 @@
   <RegisterWindow openNodes="CPU Registers" binaryNodes="" unsignedNodes="" decimalNodes="" octalNodes="" asciiNodes="" visibleNodes="CPU Registers/PC;CPU Registers/SP;CPU Registers/SR;CPU Registers/R4;CPU Registers/R5;CPU Registers/R6;CPU Registers/R7;CPU Registers/R8;CPU Registers/R9;CPU Registers/R10;CPU Registers/R11;CPU Registers/R12;CPU Registers/R13;CPU Registers/R14;CPU Registers/R15" name="COMM Daughter Board Code" />
  </Register1>
  <Register2>
-  <RegisterWindow openNodes="P1;P1/P1IV;UCSI_B0_SPI" binaryNodes="P1/P1IN;P1/P1IFG" unsignedNodes="" decimalNodes="" octalNodes="" asciiNodes="" visibleNodes="P1/P1IN;P1/P1OUT;P1/P1DIR;P1/P1REN;P1/P1DS;P1/P1SEL0;P1/P1SEL1;P1/P1IV;P1/P1IES;P1/P1IE;P1/P1IFG;UCSI_B0_SPI/UCB0CTLW0;UCSI_B0_SPI/UCB0CTL0;UCSI_B0_SPI/UCB0CTL1;UCSI_B0_SPI/UCB0BRW;UCSI_B0_SPI/UCB0BR0;UCSI_B0_SPI/UCB0BR1;UCSI_B0_SPI/UCB0STATW;UCSI_B0_SPI/UCB0RXBUF;UCSI_B0_SPI/UCB0TXBUF;UCSI_B0_SPI/UCB0IE;UCSI_B0_SPI/UCB0IFG;UCSI_B0_SPI/UCB0IV" name="COMM Daughter Board Code" />
+  <RegisterWindow openNodes="P1" binaryNodes="P1/P1IN;P1/P1IV;P1/P1IE;P1/P1IFG" unsignedNodes="" decimalNodes="" octalNodes="" asciiNodes="" visibleNodes="P1/P1IN;P1/P1OUT;P1/P1DIR;P1/P1REN;P1/P1DS;P1/P1SEL0;P1/P1SEL1;P1/P1IV;P1/P1IES;P1/P1IE;P1/P1IFG" name="COMM Daughter Board Code" />
  </Register2>
  <Register3>
   <RegisterWindow openNodes="CPU Registers" binaryNodes="" unsignedNodes="" decimalNodes="" octalNodes="" asciiNodes="" visibleNodes="CPU Registers/PC;CPU Registers/SP;CPU Registers/SR;CPU Registers/R4;CPU Registers/R5;CPU Registers/R6;CPU Registers/R7;CPU Registers/R8;CPU Registers/R9;CPU Registers/R10;CPU Registers/R11;CPU Registers/R12;CPU Registers/R13;CPU Registers/R14;CPU Registers/R15" name="COMM Daughter Board Code" />
@@ -52,9 +52,7 @@
   <Trace enabled="Yes" />
  </TraceWindow>
  <Watch1>
-  <Watches active="1" update="Never" >
-   <Watchpoint linenumber="0" radix="2" name="P1IFG" expression="*(unsigned char *)0x21c" filename="" />
-  </Watches>
+  <Watches active="1" update="Never" />
  </Watch1>
  <Watch2>
   <Watches active="0" update="Never" />
@@ -66,14 +64,15 @@
   <Watches active="0" update="Never" />
  </Watch4>
  <Files>
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="0" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/main.c" y="82" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/main.c" left="0" selected="0" name="unnamed" top="2" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="3" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/commands.c" y="212" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/commands.c" left="0" selected="1" name="unnamed" top="197" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="0" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/COMM.h" y="30" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/COMM.h" left="0" selected="0" name="unnamed" top="0" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="0" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/COMM_Events.c" y="227" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/COMM_Events.c" left="0" selected="0" name="unnamed" top="0" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="0" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/COMM.c" y="430" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/COMM.c" left="0" selected="0" name="unnamed" top="0" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="23" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/Radio_functions.c" y="71" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/Radio_functions.c" left="0" selected="0" name="unnamed" top="90" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="18" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/Radio_functions.h" y="40" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/Radio_functions.h" left="0" selected="0" name="unnamed" top="0" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="0" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/COMM_Events.h" y="6" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/COMM_Events.h" left="0" selected="0" name="unnamed" top="0" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="0" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/main.c" y="36" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/main.c" left="0" selected="0" name="unnamed" top="21" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="13" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/commands.c" y="149" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/commands.c" left="0" selected="0" name="unnamed" top="3" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="42" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/COMM.c" y="606" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/COMM.c" left="0" selected="1" name="unnamed" top="579" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="8" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/Radio_functions.h" y="42" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/Radio_functions.h" left="0" selected="0" name="unnamed" top="0" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="0" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/COMM.h" y="61" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/COMM.h" left="0" selected="0" name="unnamed" top="33" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="0" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/COMM_Events.h" y="0" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/COMM_Events.h" left="0" selected="0" name="unnamed" top="0" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="50" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/AX25_EncodeDecode.c" y="50" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/AX25_EncodeDecode.c" left="0" selected="0" name="unnamed" top="32" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="0" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/Radio_functions.c" y="380" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board/Radio_functions.c" left="0" selected="0" name="unnamed" top="335" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="0" debugPath="C:/Users/cjodell2/AppData/Local/Rowley Associates Limited/CrossWorks for MSP430/v3/packages/include/msp430f6779a.h" y="2469" path="C:/Users/cjodell2/AppData/Local/Rowley Associates Limited/CrossWorks for MSP430/v3/packages/include/msp430f6779a.h" left="0" selected="0" name="unnamed" top="2442" />
  </Files>
- <MSP430CrossStudioWindow activeProject="COMM Daughter Board Code" autoConnectTarget="MSP-FET430UIF(V3)" debugSearchFileMap="" fileDialogInitialDirectory="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM Daughter Board" fileDialogDefaultFilter="*.c" autoConnectCapabilities="528255" debugSearchPath="" buildConfiguration="MSP430 Debug" />
+ <MSP430CrossStudioWindow activeProject="COMM Daughter Board Code" autoConnectTarget="MSP-FET430UIF(V3)" debugSearchFileMap="" fileDialogInitialDirectory="" fileDialogDefaultFilter="*.c" autoConnectCapabilities="528255" debugSearchPath="" buildConfiguration="MSP430 Debug" />
 </session>
