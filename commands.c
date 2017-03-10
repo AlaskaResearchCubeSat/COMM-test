@@ -168,7 +168,7 @@ char status1, status2, radio, state1, state2;
     printf("The state of the CC2500_2 is %i.\r\n",state2);
   }
 return 0;
-}
+} 
 
 // streams data from radio argv[1]=ADR 
 //TODO   (update for second radio)
@@ -318,15 +318,30 @@ power=strtoul(argv[2],NULL,0);
 }
 
 int transmit_test(char **argv,unsigned short argc){
+
+  int i=0;
+  for(i=0;i<19;i++){
+    Tx1Buffer[i]=Packet_NoBit[i];
+  }
+ //while(UCA2_CheckKey()==EOF){
+  ctl_events_set_clear(&COMM_evt,COMM_EVT_CC2500_1_TX_START,0);
+  //BUS_delay_usec(50);  // delay in ms When commented out underflow error stops
+   //}
+}
+
+int transmit_test2(char **argv,unsigned short argc){
+
   int i=0;
   for(i=0;i<19;i++){
     Tx1Buffer[i]=Packet_NoBit[i];
   }
  while(UCA2_CheckKey()==EOF){
-   ctl_events_set_clear(&COMM_evt,COMM_EVT_CC2500_1_TX_START,0);
+  RF_Send_Packet(Tx1Buffer, 19, CC2500_1);
   BUS_delay_usec(50);  // delay in ms 
-   }
+ }
 }
+
+
 
 
 //table of commands with help
@@ -340,6 +355,7 @@ const CMD_SPEC cmd_tbl[]={{"help"," [command]",helpCmd},
                    {"transmit_test","Testing tranmission of data\r\n [data][event] ", transmit_test},
                    {"power","Changes the transmit power of the radio [radio][PATABLE Value] ex. CC2500_1 0x8D",power},
                    {"powerbetter","Changes the transmit power of the radio [radio][power] ex. CC2500_1 -24",powerbetter},
+                   {"transmit_test2","Testing tranmission of data\r\n [data][event] ", transmit_test2},
                    ARC_COMMANDS,CTL_COMMANDS,// ERROR_COMMANDS
                    //end of list
                    {NULL,NULL,NULL}};
