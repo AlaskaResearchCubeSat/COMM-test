@@ -34,7 +34,7 @@ int __getchar(void){
 //******************************************* Main loop****************************************************************************************************************
 void main(void){
   //turn on LED's this will flash the LED's during startup
-  P7OUT=0x01;
+  P7OUT=0x00;
   P7DIR=0xFF;
   
   //Initlize the comm communication port for the SPI 

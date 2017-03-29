@@ -192,7 +192,7 @@ int streamCmd(char **argv,unsigned short argc){
   }
  
   // input case statment to pick from enum table in COMM.h
-  ctl_events_set_clear(&COMM_evt,COMM_EVT_CC1101_TX_START,0); 
+  ctl_events_set_clear(&COMM_evt,COMM_EVT_CC2500_1_TX_START,0); 
   
   printf("Push any key to stop\r\n");
   getchar(); // waits for any char 
@@ -318,15 +318,17 @@ power=strtoul(argv[2],NULL,0);
 }
 
 int transmit_test(char **argv,unsigned short argc){
-
   int i=0;
+  data_mode=TX_DATA_BUFFER;
   for(i=0;i<19;i++){
     Tx1Buffer[i]=Packet_NoBit[i];
   }
- //while(UCA2_CheckKey()==EOF){
+//while(UCA2_CheckKey()==EOF){
+  P7OUT ^= BIT1;  // flip a led every loop 
   ctl_events_set_clear(&COMM_evt,COMM_EVT_CC2500_1_TX_START,0);
-  //BUS_delay_usec(50);  // delay in ms When commented out underflow error stops
-   //}
+  //BUS_delay_usec(50);  // delay in ms
+
+//}
 }
 
 int transmit_test2(char **argv,unsigned short argc){
@@ -341,7 +343,16 @@ int transmit_test2(char **argv,unsigned short argc){
  }
 }
 
-
+readtemp(char **argv,unsigned short argc)
+{
+// TODO voltage sampling and then use the conversion 2.43 mV/degrees C
+int i= 0; 
+Radio_Strobe(TI_CCxxx0_SIDLE,CC2500_1);
+Radio_Write_Registers(TI_CCxxx0_PTEST,0xBF,CC2500_1); //Writing 0xBF to this register makes the on-chip temperature sensor available in the IDLE state. The default 0x7F value
+Radio_Write_Registers(TI_CCxxx0_IOCFG0,0x01,CC2500_1);
+//printf("The temperature is %i \r\n", );
+Radio_Write_Registers(TI_CCxxx0_PTEST,0x7F,CC2500_1);
+}
 
 
 //table of commands with help
@@ -356,6 +367,7 @@ const CMD_SPEC cmd_tbl[]={{"help"," [command]",helpCmd},
                    {"power","Changes the transmit power of the radio [radio][PATABLE Value] ex. CC2500_1 0x8D",power},
                    {"powerbetter","Changes the transmit power of the radio [radio][power] ex. CC2500_1 -24",powerbetter},
                    {"transmit_test2","Testing tranmission of data\r\n [data][event] ", transmit_test2},
+                   {"readtemp","reads the temperature", readtemp},
                    ARC_COMMANDS,CTL_COMMANDS,// ERROR_COMMANDS
                    //end of list
                    {NULL,NULL,NULL}};
