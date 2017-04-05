@@ -2,11 +2,10 @@
 <session>
  <Bookmarks/>
  <Breakpoints>
-  <BreakpointListItem line="451" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="2" counter="0" isFunctionBreakpoint="false" filename="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/COMM.c" expression="" />
-  <BreakpointListItem line="458" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="2" counter="0" isFunctionBreakpoint="false" filename="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/COMM.c" expression="" />
-  <BreakpointListItem line="464" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="2" counter="0" isFunctionBreakpoint="false" filename="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/COMM.c" expression="" />
-  <BreakpointListItem line="183" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="2" counter="0" isFunctionBreakpoint="false" filename="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/commands.c" expression="" />
-  <BreakpointListItem line="195" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="2" counter="0" isFunctionBreakpoint="false" filename="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/commands.c" expression="" />
+  <BreakpointListItem line="452" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="2" counter="0" isFunctionBreakpoint="false" filename="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/COMM.c" expression="" />
+  <BreakpointListItem line="465" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="2" counter="0" isFunctionBreakpoint="false" filename="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/COMM.c" expression="" />
+  <BreakpointListItem line="548" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="2" counter="0" isFunctionBreakpoint="false" filename="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/COMM.c" expression="" />
+  <BreakpointListItem line="552" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="2" counter="0" isFunctionBreakpoint="false" filename="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/COMM.c" expression="" />
  </Breakpoints>
  <EEMRegistersWindow>
   <EEMRegisters moduleClockControl="841d" generalClockControl="2e" />
@@ -15,7 +14,7 @@
   <EEMStateStorage control="2" />
  </EEMStateStorageWindow>
  <EEMTriggerSequencerWindow>
-  <EEMTriggers seqnxtstate0="0" seqnxtstate1="0" seq_ctl="7" seqaction="" />
+  <EEMTriggers seqnxtstate0="0" seqnxtstate1="0" seq_ctl="0" seqaction="" />
  </EEMTriggerSequencerWindow>
  <EEMTriggersWindow/>
  <ExecutionProfileWindow/>
@@ -57,8 +56,8 @@
  </TraceWindow>
  <Watch1>
   <Watches active="1" update="Twice a Second" >
+   <Watchpoint linenumber="609" radix="2" name="state" expression="state" filename="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/COMM.c" />
    <Watchpoint linenumber="17" radix="10" name="Tx1Buffer_Len" expression="Tx1Buffer_Len" filename="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/COMM.c" />
-   <Watchpoint linenumber="606" radix="2" name="state" expression="state" filename="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/COMM.c" />
   </Watches>
  </Watch1>
  <Watch2>
@@ -71,14 +70,15 @@
   <Watches active="0" update="Never" />
  </Watch4>
  <Files>
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="12" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/main.c" y="36" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/main.c" left="0" selected="0" name="unnamed" top="18" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="36" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/commands.c" y="27" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/commands.c" left="0" selected="0" name="unnamed" top="135" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="0" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/AX25_EncodeDecode.c" y="133" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/AX25_EncodeDecode.c" left="0" selected="0" name="unnamed" top="112" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="8" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/Radio_functions.c" y="63" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/Radio_functions.c" left="0" selected="0" name="unnamed" top="129" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="66" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/Radio_functions.h" y="20" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/Radio_functions.h" left="0" selected="0" name="unnamed" top="153" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="21" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/COMM.c" y="548" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/COMM.c" left="0" selected="1" name="unnamed" top="519" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="0" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/main.c" y="38" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/main.c" left="0" selected="0" name="unnamed" top="18" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="29" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/commands.c" y="339" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/commands.c" left="0" selected="0" name="unnamed" top="312" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="0" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/AX25_EncodeDecode.c" y="43" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/AX25_EncodeDecode.c" left="0" selected="1" name="unnamed" top="33" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="38" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/Radio_functions.c" y="466" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/Radio_functions.c" left="0" selected="0" name="unnamed" top="444" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="0" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/Radio_functions.h" y="20" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/Radio_functions.h" left="0" selected="0" name="unnamed" top="0" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="23" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/COMM.c" y="392" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/COMM.c" left="0" selected="0" name="unnamed" top="362" />
   <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="0" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/COMM.h" y="17" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/COMM.h" left="0" selected="0" name="unnamed" top="0" />
   <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="0" debugPath="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/COMM_Events.c" y="0" path="Z:/ARC-2/ARC2-COMM/ARC2-COMM Software Design/COMM-test/COMM_Events.c" left="0" selected="0" name="unnamed" top="0" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="" x="0" debugPath="z:/arc-2/arc2-software/libraries/arclib/mainloop.c" y="880" path="Z:/arc-2/arc2-software/libraries/arclib/mainLoop.c" left="0" selected="0" name="unnamed" top="880" />
  </Files>
  <MSP430CrossStudioWindow activeProject="COMM Daughter Board Code" autoConnectTarget="MSP-FET430UIF(V3)" debugSearchFileMap="" fileDialogInitialDirectory="" fileDialogDefaultFilter="*.c" autoConnectCapabilities="528255" debugSearchPath="" buildConfiguration="MSP430 Debug" />
 </session>
