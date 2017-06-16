@@ -8,6 +8,7 @@
 #include "pins.h"         
 #include "Radio_functions.h"      
 #include "COMM.h"  
+#include <i2c.h>
 
 
 CTL_TASK_t terminal_task,sub_task,comm_task; // name your task (first thing to do when setting up a new task (1))
@@ -48,6 +49,9 @@ void main(void){
 
   //initialize UART
   UCA2_init_UART(UART_PORT,UART_TX_PIN_NUM,UART_RX_PIN_NUM);
+
+ //set up I2C bus function(unsigned int port,unsigned int sda,unsigned int scl)
+  //initI2C(4,1,0);
 
   //setup bus interface
   initARCbus(0x1F);   // Default addr for "SYS" subsystem, should be changed for specific subsystems.

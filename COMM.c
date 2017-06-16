@@ -590,7 +590,7 @@ void Radio_Interrupt_Setup(void){ // Enable RX interrupts only!  TX interrupt en
   P1IES = 0;
   P1IES |= CC2500_1_GDO2|CC2500_2_GDO2; // GDO0 interrupts on rising edge = 0 (RX), GDO2 interrupts on falling edge = 1 (TX) 
   P1IFG = 0;// Clear all flags <-- do this after IES as it will set a BIT2 high (pg 413 fam)
-  P1IE |= CC2500_1_GDO0|CC2500_1_GDO2|CC2500_2_GDO0|CC2500_2_GDO2; // Enable GDO0 interrupt only (RX interrupt) add this back after single TX works CC2500_2_GDO0
+  P1IE |= CC2500_1_GDO2|CC2500_2_GDO0|CC2500_2_GDO2; // Enable GDO0 interrupt only (RX interrupt) add this back after single TX works CC2500_2_GDO0
 }
 
 

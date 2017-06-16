@@ -18,6 +18,7 @@ Then function must be added to the "const CMD_SPEC cmd_tbl[]={{"help"," [command
 #include "COMM.h"
 #include "AX25_EncodeDecode.h"
 #include "COMM_Events.h"
+#include "temp.h"
 
 
 
@@ -343,7 +344,22 @@ int transmit_test2(char **argv,unsigned short argc){
  }
 }
 
-readtemp(char **argv,unsigned short argc)
+int temp(char **argv,unsigned short argc)
+{
+  unsigned char reg[1] = {TEMP_VAL};
+  unsigned char addr = 0x48; // all low (0x48); (0x4A A2 low, A1 High, A0 low); (0x49 A2 low, A1 low, A0 high); (0x4C A2 High, A1 low, A0 low); (0x4E A2 High, A1 High, A0 low); (0x4D A2 High, A1 Low, A0 High); (0x4F A2 High, A1 High, A0 High);
+  unsigned char aptr, *temp;
+  int ret;
+  ret = i2c_tx(addr, reg ,1);
+  printf("I2C TX return %i \r\n\t", ret);
+  if(ret==1){
+  ret = i2c_rx(addr,temp, 2); 
+  printf("I2C RX return %i \r\n\t", ret);
+  printf("%i.%02u \r\n\t",(short)((char)temp[0]),25*(temp[1]>>6));
+  }
+}
+
+/*readtemp(char **argv,unsigned short argc)
 {
 // TODO voltage sampling and then use the conversion 2.43 mV/degrees C
 int i= 0; 
@@ -353,7 +369,7 @@ Radio_Write_Registers(TI_CCxxx0_IOCFG0,0x01,CC2500_1);
 //printf("The temperature is %i \r\n", );
 Radio_Write_Registers(TI_CCxxx0_PTEST,0x7F,CC2500_1);
 }
-
+*/
 
 //table of commands with help
 const CMD_SPEC cmd_tbl[]={{"help"," [command]",helpCmd},
@@ -367,7 +383,7 @@ const CMD_SPEC cmd_tbl[]={{"help"," [command]",helpCmd},
                    {"power","Changes the transmit power of the radio [radio][PATABLE Value] ex. CC2500_1 0x8D",power},
                    {"powerbetter","Changes the transmit power of the radio [radio][power] ex. CC2500_1 -24",powerbetter},
                    {"transmit_test2","Testing tranmission of data\r\n [data][event] ", transmit_test2},
-                   {"readtemp","reads the temperature", readtemp},
+                   {"temp", "Takes Temperature",temp},
                    ARC_COMMANDS,CTL_COMMANDS,// ERROR_COMMANDS
                    //end of list
                    {NULL,NULL,NULL}};
