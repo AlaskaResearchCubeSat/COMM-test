@@ -102,26 +102,18 @@ char status1, status2, radio, state1, state2;
 return 0;
 } 
 
-// stream [radio] [zeros|ones] [optional seed]
+// streams data from radio argv[1]=ADR 
 //TODO   (update for second radio)
 int streamCmd(char **argv,unsigned short argc){
-short radio_check;
-// input checking
-  // input checking for radio select
-    radio_check = set_radio_path(argv[1]);  // set radio_select  
-   if (radio_check==-1) {
-      printf("Error: Unknown radio \"%s\"\r\n",argv[1]);
-      return -2;
-    }
-  // input checking for streamed data
-  if(!strcmp(argv[2],"value")){
+// input checking 
+  if(!strcmp(argv[1],"value")){
     data_mode=TX_DATA_PATTERN;
-    data_seed=atoi(argv[3]); // arg to stream (0xXX)
+    data_seed=atoi(argv[2]); // arg to stream (0xXX)
   }
-  else if(!strcmp(argv[2],"random")){
+  else if(!strcmp(argv[1],"random")){
     data_mode=TX_DATA_RANDOM;
-    if(argc==3){
-      data_seed=atoi(argv[3]);
+    if(argc==2){
+      data_seed=atoi(argv[2]);
       if(data_seed==0){
         data_seed=1;
       }
@@ -130,152 +122,87 @@ short radio_check;
       data_seed=1;
     }
   }
- 
   // input case statment to pick from enum table in COMM.h
   ctl_events_set_clear(&COMM_evt,COMM_EVT_CC2500_1_TX_START,0); 
-  
   printf("Push any key to stop\r\n");
   getchar(); // waits for any char 
-  
   Radio_Write_Registers(TI_CCxxx0_PKTCTRL0, 0x00, radio_select);         // Fixed byte mode
   state = TX_END;
-
   return 0;
 }
 
+//Select power output from the radio chip
+//TODO (update for second radio)
+int powerCmd(char **argv,unsigned short argc){
+  const int power_dbm[8]=             { -30, -20, -15, -10,   0,   5,   7,  10};
+  const unsigned char power_PTABLE[8]={0x12,0x0E,0x1D,0x34,0x60,0x84,0xC8,0xC0};
+  unsigned long input;
+  int idx,i;
+  int pwr;
+  char *end;
+  unsigned char read;
 
-//Better power function using enum(set up in radio radiofunctions.h)
-int powerCmd(char **argv,unsigned short argc)
-{
-int radio_level;
-enum power_level power;
-set_radio_path(argv[1]); //select the radio
-power=strtoul(argv[2],NULL,0);
- if (power ==  power1){
-  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0x00, radio_select);
-  printf("The power selected is -55 dBm\r\n" );
-  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
+  if(argc>0){
+    input=strtol(argv[1],&end,0);
+    if(*end=='\0' || !strcmp(end,"dBm")){
+      pwr=input;
+    }else{
+      printf("Error : unknown suffix \"%s\" for power \"%s\"\r\n",end,argv[1]);
+      return -1;
+    }
+    for(i=0,idx=0;i<8;i++){
+      //find the power that is closest to desired
+      if(abs(power_dbm[i]-pwr)<abs(power_dbm[idx]-pwr)){
+        idx=i;
+      }
+    }
+    printf("Setting radio to %idBm\r\n",power_dbm[idx]);
+    Radio_Write_Registers(TI_CCxxx0_PATABLE,power_PTABLE[idx],radio_select);
   }
-  else if(power ==  power2){
-  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0x50, radio_select);
-  printf("The power selected is -30 dBm\r\n" );
-  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
+  read=Radio_Read_Registers(TI_CCxxx0_PATABLE,radio_select);
+  for(i=0,idx=-1;i<8;i++){
+    if(power_PTABLE[i]==read){
+      idx=i;
+      break;
+    }
   }
-    else if(power ==  power3){
-  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0x44, radio_select);
-  printf("The power selected is -28 dBm\r\n" );
-  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
+  if(idx==-1){
+    printf("PTABLE = 0x%02X\r\n",read);
+  }else{
+    printf("PTABLE = %idBm = 0x%02X\r\n",power_dbm[idx],read);
   }
-    else if(power ==  power4){
-  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0xC0, radio_select);
-  printf("The power selected is -26 dBm\r\n" );
-  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
-  }
-    else if(power ==  power5){
-  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0x84, radio_select);
-  printf("The power selected is -24 dBm\r\n" );
-  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
-  }
-    else if(power ==  power6){
-  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0x81, radio_select);
-  printf("The power selected is -22 dBm\r\n" );
-  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
-  }
-    else if(power ==  power7){
-  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0x46, radio_select);
-  printf("The power selected is -20 dBm\r\n" );
-  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
-  }
-    else if(power ==  power8){
-  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0x93, radio_select);
-  printf("The power selected is -18 dBm\r\n" );
-  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
-  }
-    else if(power ==  power9){
-  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0x55, radio_select);
-  printf("The power selected is -16 dBm\r\n" );
-  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
-  }
-    else if(power ==  power10){
-  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0x8D, radio_select);
-  printf("The power selected is -14 dBm\r\n" );
-  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
-  }
-    else if(power ==  power11){
-  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0xC6, radio_select);
-  printf("The power selected is -12 dBm\r\n" );
-  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
-  }
-    else if(power ==  power12){
-  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0x97, radio_select);
-  printf("The power selected is -10 dBm\r\n" );
-  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
-  }
-    else if(power ==  power13){
-  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0x6E, radio_select);
-  printf("The power selected is -8 dBm\r\n" );
-  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
-  }
-    else if(power ==  power14){
-  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0x7F, radio_select);
-  printf("The power selected is -6 dBm\r\n" );
-  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
-  }
-  else if(power ==  power15){
-  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0xA9, radio_select);
-  printf("The power selected is -4 dBm\r\n" );
-  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
-  }
-    else if(power ==  power16){
-  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0xBB, radio_select);
-  printf("The power selected is -2 dBm\r\n" );
-  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
-  }
-    else if(power ==  power17){
-  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0xFE, radio_select);
-  printf("The power selected is -0 dBm\r\n" );
-  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
-  }
-    else if(power ==  power18){
-  Radio_Write_Registers(TI_CCxxx0_PATABLE, 0xFF, radio_select);
-  printf("The power selected is +1 dBm\r\n" );
-  printf("The radio selected is radio CC2500_%i radio \r\n", radio_select);
-  }
-  else{
-  printf("error not a valid power");
-  }
-}
-
-int transmitTestCmd(char **argv,unsigned short argc){
-  int i=0;
-  data_mode=TX_DATA_BUFFER;
-  for(i=0;i<19;i++){
-    Tx1Buffer[i]=Packet_NoBit[i];
-  }
-//while(UCA2_CheckKey()==EOF){
-  P7OUT ^= BIT1;  // flip a led every loop 
-  ctl_events_set_clear(&COMM_evt,COMM_EVT_CC2500_1_TX_START,0);
-  //BUS_delay_usec(50);  // delay in ms
-
-//}
-}
-
-int transmit_test2(char **argv,unsigned short argc){
-
-  int i=0;
-  for(i=0;i<19;i++){
-    Tx1Buffer[i]=Packet_NoBit[i];
-  }
- while(UCA2_CheckKey()==EOF){
-  RF_Send_Packet(Tx1Buffer, 19, CC2500_1);
-  BUS_delay_usec(50);  // delay in ms 
- }
+  return 0;
 } 
 
-/*
-int SRES(char **argv,unsigned short argc)
-TI_CCxxx0_SRES
-*/
+
+// reset selected radio, if un-specified all radios rest
+//TODO gets stuck in set_radio_path.
+int radio_resetCmd(char **argv,unsigned short argc){
+  int radio_check;
+
+  if ( argc < 1){           // reset all radios if no args passed 
+    Reset_Radio(CC2500_1);
+    Reset_Radio(CC2500_2);
+    __delay_cycles(800);                         // Wait for radio to be ready before writing registers.cc1101.pdf Table 13 indicates a power-on start-up time of 150 us for the crystal to be stable
+    
+    Write_RF_Settings(CC2500_1);                // Write radios Settings
+    Write_RF_Settings(CC2500_2);                // Write radios Settings
+
+  }
+  else{                     
+    radio_check = set_radio_path(argv[1]);       // reset specified radio
+    printf("radio path set to %d.\r\nradio_check = %d.\r\n",radio_select,radio_check);
+    if (radio_check && -1){
+      printf("Plese enter a valid radio, ex. \"CC1101, CC2500_1, CC2500_2\".\r\n");
+      return -1;
+    }
+    printf("The %s radio has been reset.\r\n");
+    Reset_Radio(radio_select);
+    __delay_cycles(800);                         // Wait for radio to be ready before writing registers.cc1101.pdf Table 13 indicates a power-on start-up time of 150 us for the crystal to be stable
+    Write_RF_Settings(radio_select);             // Write radios Settings
+  }
+  return 0;
+}
 
 //table of commands with help
 const CMD_SPEC cmd_tbl[]={{"help"," [command]",helpCmd},
@@ -283,9 +210,8 @@ const CMD_SPEC cmd_tbl[]={{"help"," [command]",helpCmd},
                    {"stream","[zeros|ones|[value [val]]]\r\n""Stream data from radio.\n\r",streamCmd},
                    {"writereg","Writes data to radio register\r\n [radio] [adress] [data].\n\r",writeReg},
                    {"readreg","reads data from a radio register\r\n [radio] [adrss].\n\r",readReg},
-                   {"transmitTest","Testing tranmission of data\r\n [data][event].\n\r", transmitTestCmd},
                    {"power","Changes the transmit power of the radio [radio][power].\n\rex. CC2500_1 -24\n\r",powerCmd},
-                   {"transmit_test2","Testing tranmission of data\r\n [data][event].\n\r", transmit_test2},
+                   {"radio_reset","Reset radios on COMM SPI bus.\n\rradio_reset [radio]. Note if no radio addr included all radios will be reset",radio_resetCmd},
                    ARC_COMMANDS,CTL_COMMANDS,// ERROR_COMMANDS
                    //end of list
                    {NULL,NULL,NULL}};
