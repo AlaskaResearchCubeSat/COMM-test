@@ -634,7 +634,7 @@ void Port1_ISR (void) __ctl_interrupt[PORT1_VECTOR]{
         break;
 // Radio CC2500_2 interrupts
         case P1IV_P1IFG2: // [GDO0_2] is set up to assert when RX FIFO is greater than FIFO_THR.  This is an RX function only
-           ctl_events_set_clear(&COMM_evt,COMM_EVT_CC2500_2_RX_READ,0);
+           //ctl_events_set_clear(&COMM_evt,COMM_EVT_CC2500_2_RX_READ,0);
            
 
         break; 

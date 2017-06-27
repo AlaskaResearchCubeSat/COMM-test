@@ -102,18 +102,26 @@ char status1, status2, radio, state1, state2;
 return 0;
 } 
 
-// streams data from radio argv[1]=ADR 
+// stream [radio] [zeros|ones] [optional seed]
 //TODO   (update for second radio)
 int streamCmd(char **argv,unsigned short argc){
-// input checking 
-  if(!strcmp(argv[1],"value")){
+short radio_check;
+// input checking
+  // input checking for radio select
+    radio_check = set_radio_path(argv[1]);  // set radio_select  
+   if (radio_check==-1) {
+      printf("Error: Unknown radio \"%s\"\r\n",argv[1]);
+      return -2;
+    }
+  // input checking for streamed data
+  if(!strcmp(argv[2],"value")){
     data_mode=TX_DATA_PATTERN;
-    data_seed=atoi(argv[2]); // arg to stream (0xXX)
+    data_seed=atoi(argv[3]); // arg to stream (0xXX)
   }
-  else if(!strcmp(argv[1],"random")){
+  else if(!strcmp(argv[2],"random")){
     data_mode=TX_DATA_RANDOM;
-    if(argc==2){
-      data_seed=atoi(argv[2]);
+    if(argc==3){
+      data_seed=atoi(argv[3]);
       if(data_seed==0){
         data_seed=1;
       }
@@ -135,19 +143,8 @@ int streamCmd(char **argv,unsigned short argc){
   return 0;
 }
 
-int power(char **argv,unsigned short argc)
-{
-int radio_power;
-radio_power = strtoul(argv[2],NULL,0); //Converts the inputed string in argv[2] to an int or hex value
-set_radio_path(argv[1]); //select the radio
-Radio_Write_Registers(TI_CCxxx0_PATABLE, radio_power, radio_select); //Write to the power register
-printf("The power selected is %x\r\n", radio_power);
-printf("The radio selected is radio CC2500_%i radio  \r\n", radio_select);
-}
-
 
 //Better power function using enum(set up in radio radiofunctions.h)
-
 int powerCmd(char **argv,unsigned short argc)
 {
 int radio_level;
