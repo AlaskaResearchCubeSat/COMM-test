@@ -20,83 +20,12 @@ Then function must be added to the "const CMD_SPEC cmd_tbl[]={{"help"," [command
 #include "COMM_Events.h"
 #include "temp.h"
 
-
-
 extern CTL_EVENT_SET_t COMM_evt; // define because this lives in COMM.c
-//********************************************************************  Example commands (not really comm related ) *********************************************
-int example_command(char **argv,unsigned short argc){
-  int i,j;
-  //TODO replace printf with puts ? 
-  printf("This is an example command that shows how arguments are passed to commands.\r\n""The values in the argv array are as follows : \r\n");
-  for(i=0;i<=argc;i++){
-    printf("argv[%i] = 0x%p\r\n\t""string = \"%s\"\r\n",i,argv[i],argv[i]);
-    //print out the string as an array of hex values
-    j=0;
-    printf("\t""hex = {");
-    do{
-      //check if this is the first element
-      if(j!='\0'){
-        //print a space and a comma
-        printf(", ");
-      }
-      //print out value
-      printf("0x%02hhX",argv[i][j]);
-    }while(argv[i][j++]!='\0');
-    //print a closing bracket and couple of newlines
-    printf("}\r\n\r\n");
-    printf("argc = %i\r\n",argc);
-  }
-  i=strtol(argv[1],0,0);
-  printf("the string says %p\r\n",i);
-  return 0;
-}
-/*********************************************************** Using the Timer_A1 ***************************************************************
-* DONT USE TIMER0_Ax_VECTOR !!! this interrupt is use in library code and will cause a collision 
-* Use TIMERx_Ay_VECTOR x=2,3 & y=0,1
-* TIMER0_Ax_VECTOR used in ARClib ? 
-* TIMER1_Ax_VECTOR used in ????
-**********************************************************************************************************************************************/
 
-int example_timer_IR(char **argv,unsigned short argc){
-  int timer_check;
-  WDTCTL = WDTPW+WDTHOLD;                                   // Stop WDT
-  P7DIR |= 0xFF;                                            // Setting port 7 to drive LED's (0xFF ==1111 1111)
-  P7OUT = 0x00;                                             // Set all LED's on port 7 to start all off
-//************************************ Set up clock [0] 
-  TA2CTL |= TASSEL__ACLK | MC_2;                            // Setting Timer_A to ACLK(TASSEL_1) to continuous mode(MC_2)
-
-//*********************************** Set timer interrupt enable [1] 
-  TA2CCTL0 |= CCIE;                                          // Capture/compare interrupt enable #0
-  TA2CCTL1 |= CCIE;                                          // Capture/compare interrupt enable #1
-
-//*********************************** Set the timer count IR value [2] 
-  TA2CCR0 = 10000;                                           // Timer0_A3 Capture/Compare @ 10000 counts
-  TA2CCR1 = 1000;                                            // TA0IV_1 Capture/Compare @ 1000 counts
-
-   while (1)                                                // poll in while loop until a key press
-   {
-      if ((timer_check=getchar()) != EOF)
-     {
-      break;                                                 // break out of loop if a key is pressed
-     }
-    ctl_events_wait(CTL_EVENT_WAIT_ANY_EVENTS,0, 1<<15, CTL_TIMEOUT_DELAY, 1000); // wait in loop 
-   }
-  reset(0,ERR_SRC_CMD,CMD_ERR_RESET,0);                     // reset clock registers 
-  return 0;
-}
-
-// ********************************* Timer_A0 interrupt code 
-void Timer_A2_A0(void)__interrupt[TIMER2_A0_VECTOR]{     // Timer A0 interrupt service routine TA0IV_TA0IFG. 
-  P7OUT^=BIT0; // toggle LEDs when IR is called
-}
-
-void Timer_A2_A1(void)__interrupt[TIMER2_A1_VECTOR]{     // Timer A0 interrupt service routine for capture comp 1 and 2
-        P7OUT^=BIT1; // light LEDs
-}
 //*********************************************************************************** RADIO COMMANDS *****************************************************
-
+//NOTE do not define global vars in a local function ie "radio_select"
 int writeReg(char **argv,unsigned short argc){
-  char radio_select, regaddr, regdata;  // expecting [radio] [address] [data]
+  char regaddr, regdata;  // expecting [radio] [address] [data]
   int radio_check;
 
   if(argc>3){ // input checking and set radio address 
@@ -111,9 +40,11 @@ int writeReg(char **argv,unsigned short argc){
       return -2;
     }
   else{
+    //printf("Radio = %i\r\n",radio_select);
     regaddr=strtoul(argv[2],NULL,0);
     regdata = strtoul(argv[3],NULL,0);
     Radio_Write_Registers(regaddr, regdata, radio_select);
+    //Radio_Write_Registers(regaddr, regdata, 1);
     printf("Wrote register 0x%02x = 0x%02x [regaddr, regdata]\r\n", regaddr, regdata);
     return 0;
   }
@@ -217,7 +148,7 @@ printf("The radio selected is radio CC2500_%i radio  \r\n", radio_select);
 
 //Better power function using enum(set up in radio radiofunctions.h)
 
-int powerbetter(char **argv,unsigned short argc)
+int powerCmd(char **argv,unsigned short argc)
 {
 int radio_level;
 enum power_level power;
@@ -318,7 +249,7 @@ power=strtoul(argv[2],NULL,0);
   }
 }
 
-int transmit_test(char **argv,unsigned short argc){
+int transmitTestCmd(char **argv,unsigned short argc){
   int i=0;
   data_mode=TX_DATA_BUFFER;
   for(i=0;i<19;i++){
@@ -342,48 +273,22 @@ int transmit_test2(char **argv,unsigned short argc){
   RF_Send_Packet(Tx1Buffer, 19, CC2500_1);
   BUS_delay_usec(50);  // delay in ms 
  }
-}
+} 
 
-int temp(char **argv,unsigned short argc)
-{
-  unsigned char reg[1] = {TEMP_VAL};
-  unsigned char addr = 0x48; // all low (0x48); (0x4A A2 low, A1 High, A0 low); (0x49 A2 low, A1 low, A0 high); (0x4C A2 High, A1 low, A0 low); (0x4E A2 High, A1 High, A0 low); (0x4D A2 High, A1 Low, A0 High); (0x4F A2 High, A1 High, A0 High);
-  unsigned char aptr, *temp;
-  int ret;
-  ret = i2c_tx(addr, reg ,1);
-  printf("I2C TX return %i \r\n\t", ret);
-  if(ret==1){
-  ret = i2c_rx(addr,temp, 2); 
-  printf("I2C RX return %i \r\n\t", ret);
-  printf("%i.%02u \r\n\t",(short)((char)temp[0]),25*(temp[1]>>6));
-  }
-}
-
-/*readtemp(char **argv,unsigned short argc)
-{
-// TODO voltage sampling and then use the conversion 2.43 mV/degrees C
-int i= 0; 
-Radio_Strobe(TI_CCxxx0_SIDLE,CC2500_1);
-Radio_Write_Registers(TI_CCxxx0_PTEST,0xBF,CC2500_1); //Writing 0xBF to this register makes the on-chip temperature sensor available in the IDLE state. The default 0x7F value
-Radio_Write_Registers(TI_CCxxx0_IOCFG0,0x01,CC2500_1);
-//printf("The temperature is %i \r\n", );
-Radio_Write_Registers(TI_CCxxx0_PTEST,0x7F,CC2500_1);
-}
+/*
+int SRES(char **argv,unsigned short argc)
+TI_CCxxx0_SRES
 */
 
 //table of commands with help
 const CMD_SPEC cmd_tbl[]={{"help"," [command]",helpCmd},
-                   {"timer_IR","[time]...\r\n\tExample command to show how the timer can be used as an interupt",example_timer_IR},
-                   {"ex","[arg1] [arg2] ...\r\n\t""Example command to show how arguments are passed",example_command},
-                   {"radio_status","",status_Cmd},
-                   {"stream","[zeros|ones|[value [val]]]\r\n""Stream data from radio\n\r",streamCmd},
-                   {"writereg","Writes data to radio register\r\n [radio] [adress] [data]",writeReg},
-                   {"readreg","reads data from a radio register\r\n [radio] [adrss]",readReg},
-                   {"transmit_test","Testing tranmission of data\r\n [data][event] ", transmit_test},
-                   {"power","Changes the transmit power of the radio [radio][PATABLE Value] ex. CC2500_1 0x8D",power},
-                   {"powerbetter","Changes the transmit power of the radio [radio][power] ex. CC2500_1 -24",powerbetter},
-                   {"transmit_test2","Testing tranmission of data\r\n [data][event] ", transmit_test2},
-                   {"temp", "Takes Temperature",temp},
+                   {"status","",status_Cmd},
+                   {"stream","[zeros|ones|[value [val]]]\r\n""Stream data from radio.\n\r",streamCmd},
+                   {"writereg","Writes data to radio register\r\n [radio] [adress] [data].\n\r",writeReg},
+                   {"readreg","reads data from a radio register\r\n [radio] [adrss].\n\r",readReg},
+                   {"transmitTest","Testing tranmission of data\r\n [data][event].\n\r", transmitTestCmd},
+                   {"power","Changes the transmit power of the radio [radio][power].\n\rex. CC2500_1 -24\n\r",powerCmd},
+                   {"transmit_test2","Testing tranmission of data\r\n [data][event].\n\r", transmit_test2},
                    ARC_COMMANDS,CTL_COMMANDS,// ERROR_COMMANDS
                    //end of list
                    {NULL,NULL,NULL}};

@@ -34,7 +34,6 @@ void radio_SPI_setup(void){
   PMAPKEYID=0;
 
 //SPI setup for MSP430f6779A is done on Port 4
-//Set up peripherals for COMM MSP
 //Radio SPI on P4: P4.2=UCB1SIMO, P4.4=USB1SOMI, P4.3=UCB1CLK
 //NOTE Redefined all SPI Setup on the UCA3 SPI port, COMM for ARC2 uses UCB1
 
@@ -45,6 +44,11 @@ void radio_SPI_setup(void){
                                                   // SMCLK
   UCB1BRW = 16;                                   // Set frequency divider so SPI runs at 16/16 = 1 MHz
   UCB1CTLW0 &= ~UCSWRST;  //Bring UCB1 out of reset state
+
+  //NOTE Max SPI clk speed is 9 MHz is this done? "CCxxxx_DN_DN503"
+  
+
+  
 
 // ************************************************* PIN setup 
 
@@ -66,7 +70,6 @@ void radio_SPI_setup(void){
 
 //******************************************* radio handling functions 
 
-// for ease of terminal testing. default address is CC2500_2 = 1
 int radio_select; // this is a global var
 int set_radio_path(char *radio){
   if (strcmp(radio,"CC2500_1")==0){
@@ -109,7 +112,11 @@ int radio_SPI_desel(int radio_select){
   }
 }
 
-//Function to read a single byte from the radio registers
+//Function to read a SINGLE byte from the radio registers
+/*SPI Accesses --> |R/W|B|A5|A4|A3|A2|A1|A0|
+  The R/W bit = 1 --> read, 0 --> write
+  B = 1 --> Burst R/W, 0 single R/W
+ */
 char Radio_Read_Registers(char addr, int radio_select){
   char x;
   
@@ -120,7 +127,7 @@ char Radio_Read_Registers(char addr, int radio_select){
   while (!(UCB1IFG & UCTXIFG));               // Wait for TXBUF ready
   UCB1TXBUF = 0;                               // Dummy write so we can read data
   while (UCB1STAT & UCBUSY);                   // Wait for TX to complete
-  x = UCB1RXBUF;                               // Read data
+  x = UCB1RXBUF;                               // Read data`
 
   radio_SPI_desel(radio_select); // de-select SPI CS
 
