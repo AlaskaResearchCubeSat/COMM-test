@@ -16,18 +16,25 @@ short beacon_on=0, beacon_flag=0,data_mode=TX_DATA_BUFFER;
 unsigned char data_seed, IMG_Blk, Tx1Buffer[600], RxBuffer[600], RxTemp[30];
 unsigned int Tx1Buffer_Len, TxBufferPos=0, TxBytesRemaining, RxBuffer_Len=0, RxBufferPos=0, RxBytesRemaining, state;
 
-//****************************************************** Subsystem Events ******************************************************************************
-// 
-//******************************************************************************************************************************************************
-void sub_events(void *p) __toplevel{
+/****************************************************** Subsystem Events ******************************************************************************
+//flags for events handled by the subsystem
+enum{SUB_EV_PWR_OFF=(1<<0),SUB_EV_PWR_ON=(1<<1),SUB_EV_SEND_STAT=(1<<2),SUB_EV_SPI_DAT=(1<<3),
+     SUB_EV_SPI_ERR_CRC=(1<<4),SUB_EV_SPI_ERR_BUSY=(1<<5),SUB_EV_ASYNC_OPEN=(1<<6),SUB_EV_ASYNC_CLOSE=(1<<7),
+     SUB_EV_INT_0=(1<< 8),SUB_EV_INT_1=(1<< 9),SUB_EV_INT_2=(1<<10),SUB_EV_INT_3=(1<<11),
+     SUB_EV_INT_4=(1<<12),SUB_EV_INT_5=(1<<13),SUB_EV_INT_6=(1<<14),SUB_EV_INT_7=(1<<15)
+     };
+ 
+//******************************************************************************************************************************************************/
+void sub_events(void *p) __toplevel{ // note most of this setup is taken care of in ARCbus.h
   unsigned int e;
   int i, j, resp;
   unsigned char buf[BUS_I2C_HDR_LEN+sizeof(COMM_STAT)+BUS_I2C_CRC_LEN],*ptr;
   //source and type for SPI data
   char src,type;
+                                        
 
   for(;;){
-    e=ctl_events_wait(CTL_EVENT_WAIT_ANY_EVENTS_WITH_AUTO_CLEAR,&SUB_events,SUB_EV_ALL,CTL_TIMEOUT_NONE,0);
+    e=ctl_events_wait(CTL_EVENT_WAIT_ANY_EVENTS_WITH_AUTO_CLEAR,&SUB_events,SUB_EV_ALL,CTL_TIMEOUT_NONE,0); 
 
 //******************* COMMAND TO POWER OFF??? NOTHING HAPPENING HERE **************
     if(e&SUB_EV_PWR_OFF){
@@ -70,7 +77,6 @@ void sub_events(void *p) __toplevel{
       //PrintBuffer(arcBus_stat.spi_stat.rx, arcBus_stat.spi_stat.len);  //TEST
 
          BUS_free_buffer_from_event();
-       
     }
 
     if(e&SUB_EV_SPI_ERR_CRC){
@@ -149,26 +155,6 @@ void COMM_events(void *p) __toplevel{
     //******************************************************************************************* COMM_EVT_STATUS_REQ
     if(e&COMM_EVT_STATUS_REQ){
 //TODO fix this for multiple radios and figure out if it needs to be used 
-/*        status.CC1101 = Radio_Read_Status(TI_CCxxx0_MARCSTATE,CC1101); 
-       //check radio status
-      if (Radio_Read_Status(TI_CCxxx0_MARCSTATE,CC1101) == 0x11)       // Check for RX FIFO overflow, if yes then flush dat buffer
-      {
-        Radio_Strobe(TI_CCxxx0_SFRX,radio_select); // do I need this?
-        __delay_cycles(16000);              //what is the delay for?
-        printf("Overflow Error, RX FIFO flushed, radio state now: ");
-        printf("%x \r\n",Radio_Read_Status(TI_CCxxx0_MARCSTATE,CC1101));
-      }
-
-      if (Radio_Read_Status(TI_CCxxx0_MARCSTATE,CC1101) == 0x16)       // Check for TX FIFO underflow, if yes then flush dat buffer
-      {
-        Radio_Strobe(TI_CCxxx0_SFTX,radio_select);
-        __delay_cycles(16000);              //what is the delay for?
-        printf("Underflow Error, TX FIFO flushed, radio state now: ");
-        printf("%x \r\n",Radio_Read_Status(TI_CCxxx0_MARCSTATE,CC1101));
-      } 
-      //make sure radio is in receive mode
-      Radio_Strobe(TI_CCxxx0_SRX,CC1101); */
-
         status.CC2500_1 = Radio_Read_Status(TI_CCxxx0_MARCSTATE,CC2500_1);
                //check radio status
       if (Radio_Read_Status(TI_CCxxx0_MARCSTATE,CC2500_1) == 0x11)       // Check for RX FIFO overflow, if yes then flush dat buffer  CC2500_1
@@ -204,182 +190,7 @@ void COMM_events(void *p) __toplevel{
         printf("%x \r\n",Radio_Read_Status(TI_CCxxx0_MARCSTATE,CC2500_2));
       }
     }
-  //******************************************************************************************* COMM_EVT_CC1101_RX_READ
-    if(e & COMM_EVT_CC1101_RX_READ){                  //READ RX FIFO
-      // Triggered by GDO0 interrupt     
-      // Entering here indicates that the RX FIFO is more than half filed.
-      // Need to read RXThrBytes into RXBuffer then move RxBufferPos by RxThrBytes
-      // Then wait until interrupt received again.
-        Radio_Read_Burst_Registers(TI_CCxxx0_RXFIFO, RxTemp, RxThrBytes, CC1101);
-        status.CC1101 = Radio_Read_Status(TI_CCxxx0_MARCSTATE,CC1101);
-        P7OUT |= BIT4;  // flash LED on rx 
-        //printf("Radio State: 0x%02x \n\r", status.CC1101);
-    }
-  //******************************************************************************************* COMM_EVT_CC1101_TX_START
-    if(e&COMM_EVT_CC1101_TX_START){                 //INITIALIZE TX START
-      state = TX_START;
-      TxBufferPos = 0;
-      radio_select = CC1101;
-      P7OUT |= BIT5; // debug LED
-
-//    P2IFG &= ~CC1101_GDO2;
-//    P2IE |= CC1101_GDO2;                    // Enable Port 2 GDO2
-   //   P6OUT |= RF_SW1;                        //Set T/R switch to transmit 
-
-
-// Switch on the length of the initial packet.  
-// If packet is > 256 then radio set up as INFINITE.
-// If packet is > 64 and < 256 then radio is set up as Fixed Mode
-// If packet is < 64 then radio is set up as Fixed Mode
-
-      if (Radio_Read_Status(TI_CCxxx0_MARCSTATE,radio_select) == 0x11)       // Check for RX FIFO overflow, if yes then flush dat buffer
-      {
-        Radio_Strobe(TI_CCxxx0_SFRX,radio_select); // do I need this?
-        __delay_cycles(16000);              //what is the delay for?
-        printf("Overflow Error, RX FIFO flushed, radio state now: ");
-        printf("%x \r\n",Radio_Read_Status(TI_CCxxx0_MARCSTATE,radio_select));
-      }
-
-      if (Radio_Read_Status(TI_CCxxx0_MARCSTATE,radio_select) == 0x16)       // Check for TX FIFO underflow, if yes then flush dat buffer
-      {
-        Radio_Strobe(TI_CCxxx0_SFTX,radio_select);
-        Radio_Strobe(TI_CCxxx0_SRX,radio_select); // do I need this?
-        __delay_cycles(16000);              //what is the delay for?
-        printf("Underflow Error, TX FIFO flushed, radio state now: ");
-        printf("%x \r\n",Radio_Read_Status(TI_CCxxx0_MARCSTATE,radio_select));
-      }
-
-      if(data_mode==TX_DATA_BUFFER){
-        TxBytesRemaining = Tx1Buffer_Len;
-
-        if(TxBytesRemaining > 64)
-        {
-          if(TxBytesRemaining > 256)
-          {
-            Radio_Write_Registers(TI_CCxxx0_PKTLEN, (Tx1Buffer_Len % 256), radio_select); // Pre-program the packet length
-            Radio_Write_Registers(TI_CCxxx0_PKTCTRL0, 0x02, radio_select);                // Infinite byte mode
-          }
-          else
-          {
-            Radio_Write_Registers(TI_CCxxx0_PKTLEN, Tx1Buffer_Len, radio_select);  // Pre-program packet length
-            Radio_Write_Registers(TI_CCxxx0_PKTCTRL0, 0x00, radio_select);         // Fixed byte mode
-          }
-          Radio_Write_Burst_Registers(TI_CCxxx0_TXFIFO, Tx1Buffer+TxBufferPos, 64, radio_select); // Write first 64 TX data bytes to TX FIFO
-          TxBytesRemaining = TxBytesRemaining - 64;
-          TxBufferPos = TxBufferPos + 64;
-          state = TX_RUNNING;
-        }
-        else
-        {
-          Radio_Write_Registers(TI_CCxxx0_PKTLEN, Tx1Buffer_Len, radio_select);  // Pre-program packet length
-          Radio_Write_Registers(TI_CCxxx0_PKTCTRL0, 0x00, radio_select);         // Fixed byte mode
-          Radio_Write_Burst_Registers(TI_CCxxx0_TXFIFO, Tx1Buffer+TxBufferPos, Tx1Buffer_Len, radio_select); // Write TX data
-          TxBytesRemaining = 0;
-          TxBufferPos = TxBufferPos+Tx1Buffer_Len;
-          state = TX_END;
-        }
-      }else{
-          Radio_Write_Registers(TI_CCxxx0_PKTLEN, 1, radio_select); // Pre-program the packet length
-          Radio_Write_Registers(TI_CCxxx0_PKTCTRL0, 0x02, radio_select);                // Infinite byte mode
-          //fill buffer with data
-          data_seed=tx_data_gen(Tx1Buffer,64,data_mode,data_seed);
-          Radio_Write_Burst_Registers(TI_CCxxx0_TXFIFO, Tx1Buffer, 64, radio_select); // Write first 64 TX data bytes to TX FIFO
-          state = TX_RUNNING;
-      }
-
-      Radio_Strobe(TI_CCxxx0_STX, radio_select);                                                  // Set radio state to Tx
-   }
-
-  //******************************************************************************************* COMM_EVT_CC1101_TX_THR
-    if(e & COMM_EVT_CC1101_TX_THR)
-    {
-      //printf("TX THR TxBytesRemaining = %d\r\n", TxBytesRemaining);        
-      // Entering here indicates that the TX FIFO has emptied to below TX threshold.
-      // Need to write TXThrBytes (30 bytes) from TXBuffer then move TxBufferPos by TxThrBytes
-      // Then wait until interrupt received again or go to TX_END.
-      radio_select = CC1101;  // sel radio
-      P7OUT |= BIT6; // debug LED
-
-      if(data_mode==TX_DATA_BUFFER){
-          if(TxBytesRemaining > TxThrBytes)
-          {
-             Radio_Write_Burst_Registers(TI_CCxxx0_TXFIFO, Tx1Buffer+TxBufferPos, TxThrBytes, radio_select);
-             TxBufferPos += TxThrBytes;
-             TxBytesRemaining = TxBytesRemaining - TxThrBytes;
-             state = TX_RUNNING;
-          }
-          else
-          {
-             Radio_Write_Registers(TI_CCxxx0_PKTCTRL0, 0x00, radio_select); // Enter fixed length mode to transmit the last of the bytes
-             Radio_Write_Burst_Registers(TI_CCxxx0_TXFIFO, Tx1Buffer+TxBufferPos, TxBytesRemaining, radio_select);
-             TxBufferPos += TxBytesRemaining;
-             TxBytesRemaining = 0;
-             state = TX_END;
-          }
-        }
-        else 
-        {
-         data_seed=tx_data_gen(Tx1Buffer,TxThrBytes,data_mode,data_seed);
-         Radio_Write_Burst_Registers(TI_CCxxx0_TXFIFO, Tx1Buffer, TxThrBytes, radio_select);
-         state = TX_RUNNING;
-        }
-       
-        //printf("TX THR TxBytesRemaining = %d\r\n", TxBytesRemaining); 
-    }
-
-  //******************************************************************************************* COMM_EVT_CC1101_TX_END        
-    if(e & COMM_EVT_CC1101_TX_END)
-    {
-      // Entering here indicates that the TX FIFO has emptied to the last byte sent
-      // No more bytes to send.
-      // Need to change interrupts.   
-           radio_select = CC1101;
-     ctl_timeout_wait(ctl_get_current_time()+26);  //25 ms delay to flush 30 possible remaining bytes.  Before we turn off power amplifier
-      //P6OUT &= ~RF_SW1;                             //Set T/R switches to receive
-     // P2IE &= ~CC1101_GDO2;                         // Disable Port 2 GDO2 interrupt
-     // P2IFG &= ~CC1101_GDO2;                        // Clear flag
-
-      while (Radio_Read_Status(TI_CCxxx0_MARCSTATE,radio_select) == 0x13){
-         __delay_cycles(500);
-      }
-
-      Radio_Write_Registers(TI_CCxxx0_PKTLEN,0xFF,radio_select);        //Reset PKTLEN
-      Radio_Write_Registers(TI_CCxxx0_PKTCTRL0, 0x02, radio_select);    //Reset infinite packet length mode set
-      printf("TX End\r\n");
-      printf("TxBufferPos = %d\r\n", TxBufferPos);
-
-      // Check for TX FIFO underflow, if yes then flush dat buffer
-      if (Radio_Read_Status(TI_CCxxx0_MARCSTATE,radio_select) == 0x16)
-      {
-        Radio_Strobe(TI_CCxxx0_SFTX,radio_select);
-        Radio_Strobe(TI_CCxxx0_SRX,radio_select);
-        __delay_cycles(16000); //what is the delay for?
-        printf("Underflow Error, TX FIFO flushed, radio state now: ");
-        printf("%x \r\n",Radio_Read_Status(TI_CCxxx0_MARCSTATE,radio_select)); 
-      }
-
-    }
-/*
-    if(e&COMM_sys_events_IMG_DAT)
-    {
-      puts("Received IMG Data");
-      //Need to store IMG data in SD Card so it is ready for transmission.
-      //Question as to whether or not to store data as already processed AX.25
-      //or raw data ready to be processed.
-      //Data will transmit on Radio 2 on command.
-    }
-
-    if(e&COMM_sys_events_LEDL_DAT)
-    {
-      puts("Received LEDL Data");
-      //Need to store LEDL data in SD Card so it is ready for transmission.
-      //Question as to whether or not to store data as already processed AX.25
-      //or raw data ready to be processed.
-      //Data will transmit on Radio 2 on command.
-    }
-
-*/
-
+  
   //******************************************************************************************* COMM_EVT_CC2500_1_RX_READ
     if(e & COMM_EVT_CC2500_1_RX_READ){                  //READ RX FIFO
       // Triggered by GDO0 interrupt     

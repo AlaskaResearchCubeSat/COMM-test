@@ -188,6 +188,9 @@ int radio_resetCmd(char **argv,unsigned short argc){
     Write_RF_Settings(CC2500_1);                // Write radios Settings
     Write_RF_Settings(CC2500_2);                // Write radios Settings
 
+    Radio_Strobe(TI_CCxxx0_SRX, CC2500_1);          //Initialize CCxxxx in Rx mode
+    Radio_Strobe(TI_CCxxx0_SRX, CC2500_2);          //Initialize CCxxxx in Rx mode
+
   }
   else{                     
     radio_check = set_radio_path(argv[1]);       // reset specified radio
@@ -204,6 +207,26 @@ int radio_resetCmd(char **argv,unsigned short argc){
   return 0;
 }
 
+int beaconCmd(char **argv,unsigned short argc){
+  if(argc>1){
+    printf("Error : Too many arguments\r\n");
+    return -1;
+  }
+  if(argc==1){
+    if(!strcmp(argv[1],"on")){
+      beacon_on=1;
+      //ctl_events_set_clear(&SUB_events,SUB_EV_SPI_DAT,0); 
+    }else if(!strcmp(argv[1],"off")){
+      beacon_on=0;
+    }else{
+      printf("Error : Unknown argument \"%s\"\r\n",argv[1]);
+      return -2;
+    }
+  }
+  printf("Beacon : %s\r\n",beacon_on?"on":"off");
+  return 0;
+}
+
 //table of commands with help
 const CMD_SPEC cmd_tbl[]={{"help"," [command]",helpCmd},
                    {"status","",status_Cmd},
@@ -212,6 +235,7 @@ const CMD_SPEC cmd_tbl[]={{"help"," [command]",helpCmd},
                    {"readreg","reads data from a radio register\r\n [radio] [adrss].\n\r",readReg},
                    {"power","Changes the transmit power of the radio [radio][power].\n\rex. CC2500_1 -24\n\r",powerCmd},
                    {"radio_reset","Reset radios on COMM SPI bus.\n\rradio_reset [radio]. Note if no radio addr included all radios will be reset",radio_resetCmd},
+                   {"Beacon","Toggles the COMM beacon on or off.\n\rCurrently targeting the CC2500_1",beaconCmd},
                    ARC_COMMANDS,CTL_COMMANDS,// ERROR_COMMANDS
                    //end of list
                    {NULL,NULL,NULL}};
