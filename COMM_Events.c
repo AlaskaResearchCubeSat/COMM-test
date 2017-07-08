@@ -10,6 +10,8 @@
 #include "SD-dat.h"
 #include "i2c.h"
 
+CTL_EVENT_SET_t ev_SPI_data;
+
 
 int comm_evt_gs_decode(void){
   int i, len, resp;
@@ -123,7 +125,6 @@ int COMM_CDH_reset(void){
     return RET_SUCCESS;
 }
 
-CTL_EVENT_SET_t ev_SPI_data;
 
 int COMM_Get_Data(unsigned char *data){
   int i;

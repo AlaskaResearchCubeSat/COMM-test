@@ -5,9 +5,11 @@
 #include <string.h>
 #include <SDlib.h>
 #include "COMM.h"
+#include "COMM_Events.h"
 #include "Radio_functions.h"
 #include "i2c.h"
 #include "AX25_EncodeDecode.h"
+
 
 COMM_STAT status;
 CTL_EVENT_SET_t COMM_evt;
@@ -65,18 +67,69 @@ void sub_events(void *p) __toplevel{ // note most of this setup is taken care of
 */
 // ******************* RECEIVING DATA OVER SPI *************************
     if(e&SUB_EV_SPI_DAT){
-      puts("SPI data recived:\r");
+      //puts("SPI data recived:\r");
+      printf("SUB_EV_SPI_DAT called\r\n");
       status.CC1101 = Radio_Read_Status(TI_CCxxx0_MARCSTATE, CC2500_1);
-      printf("status.CC1101 = 0X%02X \r\n",status.CC1101);
+      printf("status.CC2500_1 = 0X%02X \r\n",status.CC2500_1);
       //First byte contains data type
       //Second byte contains sender address
       //Both bytes are removed before the data is passed on to COMM
       type=arcBus_stat.spi_stat.rx[0];
       src=arcBus_stat.spi_stat.rx[1];
       printf("SPI: type = 0x%02x, src = 0x%02x\r\n",type, src);
+      printf("Trying to send beacon ON = %d FLAG = %d\r\n",beacon_on, beacon_flag);
       //PrintBuffer(arcBus_stat.spi_stat.rx, arcBus_stat.spi_stat.len);  //TEST
 
+      switch(type){
+      case SPI_BEACON_DAT:
+        if(!beacon_on){
          BUS_free_buffer_from_event();
+         printf("Im in the if statment.\r\n");
+         break;
+        }
+        for(i=0;i<COMM_TXHEADER_LEN;i++){                                             //LOAD UP HEADER
+          Tx1Buffer[i]=__bit_reverse_char(Tx1_Header[i]);                             //AX.25 octets are sent LSB first
+        }
+
+        if(!beacon_flag){                                                            //SEND HELLO MESSAGE
+          Tx1Buffer_Len=COMM_TXHEADER_LEN+sizeof(Hello)+1;                            //Set length of message
+          for(i=0;i<sizeof(Hello);i++){                 
+            Tx1Buffer[i+COMM_TXHEADER_LEN]=__bit_reverse_char(Hello[i]);              //load message after header
+          }
+        } else {                                                                      //SEND STATUS MESSAGE
+          Tx1Buffer_Len=COMM_TXHEADER_LEN+(arcBus_stat.spi_stat.len)+1;               //Set length of message: HeaderLen+(arcbusLen)+1 for carriage return
+          for(i=0;i<arcBus_stat.spi_stat.len;i++) {                                   //load message after header
+            Tx1Buffer[i+COMM_TXHEADER_LEN]=__bit_reverse_char(arcBus_stat.spi_stat.rx[i]);
+          }
+        }
+        Tx1Buffer[Tx1Buffer_Len-1]=__bit_reverse_char(COMM_CR);                     //Add carriage return
+        
+        BUS_free_buffer_from_event();                                               //Free Buffer before call to Stuff_Transition_Scramble()
+
+        //**** Create AX.25 packet (needs to include FCS, bit stuffed, flags) ***
+        printf("Tx1Buffer_Len=%d  COMM_TXHEADER_LEN=%d\r\n", Tx1Buffer_Len,COMM_TXHEADER_LEN);
+//        PrintBufferBitInv(Tx1Buffer, Tx1Buffer_Len);                              //THIS IS FOR TESTING ONLY
+
+        CRC_CCITT_Generator(Tx1Buffer, &Tx1Buffer_Len);                           //Generate FCS
+        Stuff_Transition_Scramble(Tx1Buffer, &Tx1Buffer_Len);                     //Bit stuff - Encode for transitions - Scramble data
+        ctl_events_set_clear(&COMM_evt,COMM_EVT_CC2500_1_TX_START,0);                     //Send to Radio to transmit
+        break;
+      //other data, write to SD card
+      default:
+        //write data to SD card
+        //TODO FIX THIS 
+       
+        writeSD_Data(src,type,arcBus_stat.spi_stat.rx+2);
+        if(src==BUS_ADDR_IMG && *(unsigned short*)(arcBus_stat.spi_stat.rx+2) == 0x990F){
+          IMG_Blk = arcBus_stat.spi_stat.rx[5];
+        }
+        
+  
+        ctl_events_set_clear(&ev_SPI_data,SPI_EV_DATA_REC,0);
+        //free buffer
+        BUS_free_buffer_from_event();
+        break;
+      }
     }
 
     if(e&SUB_EV_SPI_ERR_CRC){
@@ -86,7 +139,7 @@ void sub_events(void *p) __toplevel{ // note most of this setup is taken care of
       printf("SPI: type = 0x%02x, src = 0x%02x\r\n",type, src);
       printf("Trying to send beacon ON = %d FLAG = %d\r\n",beacon_on, beacon_flag);
     }
-  }
+  } 
 }
 
 //**************************************************************** radio commands ******************************************************************

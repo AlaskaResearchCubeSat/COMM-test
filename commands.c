@@ -15,9 +15,9 @@ Then function must be added to the "const CMD_SPEC cmd_tbl[]={{"help"," [command
 #include <i2c.h>
 #include <Radio_functions.h>
 #include <UCA2_uart.h>  
-#include "COMM.h"
 #include "AX25_EncodeDecode.h"
 #include "COMM_Events.h"
+#include "COMM.h"
 #include "temp.h"
 
 extern CTL_EVENT_SET_t COMM_evt; // define because this lives in COMM.c
@@ -215,7 +215,7 @@ int beaconCmd(char **argv,unsigned short argc){
   if(argc==1){
     if(!strcmp(argv[1],"on")){
       beacon_on=1;
-      //ctl_events_set_clear(&SUB_events,SUB_EV_SPI_DAT,0); 
+      ctl_events_set_clear(&SUB_events,SUB_EV_SPI_DAT,0); 
     }else if(!strcmp(argv[1],"off")){
       beacon_on=0;
     }else{
@@ -227,6 +227,13 @@ int beaconCmd(char **argv,unsigned short argc){
   return 0;
 }
 
+int TestCmd(char **argv,unsigned short argc){
+  for(;;){
+   // COMM_Send_Data(argv[1]);// send sum data. WORKS!
+  }
+return 0;
+}
+
 //table of commands with help
 const CMD_SPEC cmd_tbl[]={{"help"," [command]",helpCmd},
                    {"status","",status_Cmd},
@@ -235,7 +242,8 @@ const CMD_SPEC cmd_tbl[]={{"help"," [command]",helpCmd},
                    {"readreg","reads data from a radio register\r\n [radio] [adrss].\n\r",readReg},
                    {"power","Changes the transmit power of the radio [radio][power].\n\rex. CC2500_1 -24\n\r",powerCmd},
                    {"radio_reset","Reset radios on COMM SPI bus.\n\rradio_reset [radio]. Note if no radio addr included all radios will be reset",radio_resetCmd},
-                   {"Beacon","Toggles the COMM beacon on or off.\n\rCurrently targeting the CC2500_1",beaconCmd},
+                   {"beacon","Toggles the COMM beacon on or off.\n\rCurrently targeting the CC2500_1",beaconCmd},
+                   {"test","for testing things in code",TestCmd},
                    ARC_COMMANDS,CTL_COMMANDS,// ERROR_COMMANDS
                    //end of list
                    {NULL,NULL,NULL}};
