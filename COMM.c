@@ -81,7 +81,7 @@ void sub_events(void *p) __toplevel{ // note most of this setup is taken care of
       //PrintBuffer(arcBus_stat.spi_stat.rx, arcBus_stat.spi_stat.len);  //TEST
 
       switch(type){
-      case SPI_BEACON_DAT:
+      case SPI_BEACON_DAT:// we never pass this... as far as i can tell SPI_BEACON_DAT lives in ARCbus.h and = 'B'
         if(!beacon_on){
          BUS_free_buffer_from_event();
          printf("Im in the if statment.\r\n");
@@ -90,7 +90,7 @@ void sub_events(void *p) __toplevel{ // note most of this setup is taken care of
         for(i=0;i<COMM_TXHEADER_LEN;i++){                                             //LOAD UP HEADER
           Tx1Buffer[i]=__bit_reverse_char(Tx1_Header[i]);                             //AX.25 octets are sent LSB first
         }
-
+i
         if(!beacon_flag){                                                            //SEND HELLO MESSAGE
           Tx1Buffer_Len=COMM_TXHEADER_LEN+sizeof(Hello)+1;                            //Set length of message
           for(i=0;i<sizeof(Hello);i++){                 
