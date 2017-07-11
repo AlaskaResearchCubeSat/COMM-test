@@ -1,5 +1,5 @@
 #include <msp430.h>
-//#include <ctl_api.h>
+#include <ctl.h>
 #include <stdio.h>
 #include <ARCbus.h>
 #include <string.h>

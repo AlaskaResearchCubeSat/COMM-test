@@ -231,6 +231,7 @@ int TestCmd(char **argv,unsigned short argc){
   for(;;){
    // COMM_Send_Data(argv[1]);// send sum data. WORKS!
   }
+
 return 0;
 }
 

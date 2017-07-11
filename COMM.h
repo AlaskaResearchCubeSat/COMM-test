@@ -44,12 +44,11 @@ extern short beacon_on, beacon_flag;
   //parse events from the bus for the subsystem
   void sub_events(void *p);
 
-
-
   //parse COMM specific events
    void COMM_events(void *p);
   
-
+  // beacon timer setup
+  void COMM_timer_setup(void);
 
   void Radio_Interrupt_Setup(void);
   void PrintBuffer(char *dat, unsigned int len);

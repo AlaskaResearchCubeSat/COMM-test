@@ -1,4 +1,5 @@
 #include <msp430.h>
+#include <MSP430F6779A.h>
 #include <ctl.h>
 #include <stdio.h>
 #include <ARCbus.h>
@@ -69,12 +70,12 @@ void sub_events(void *p) __toplevel{ // note most of this setup is taken care of
     if(e&SUB_EV_SPI_DAT){
       //puts("SPI data recived:\r");
       printf("SUB_EV_SPI_DAT called\r\n");
-      status.CC1101 = Radio_Read_Status(TI_CCxxx0_MARCSTATE, CC2500_1);
+      status.CC2500_1 = Radio_Read_Status(TI_CCxxx0_MARCSTATE, CC2500_1);
       printf("status.CC2500_1 = 0X%02X \r\n",status.CC2500_1);
       //First byte contains data type
       //Second byte contains sender address
       //Both bytes are removed before the data is passed on to COMM
-      type=arcBus_stat.spi_stat.rx[0];
+      //type=arcBus_stat.spi_stat.rx[0]; 
       src=arcBus_stat.spi_stat.rx[1];
       printf("SPI: type = 0x%02x, src = 0x%02x\r\n",type, src);
       printf("Trying to send beacon ON = %d FLAG = %d\r\n",beacon_on, beacon_flag);
@@ -90,7 +91,7 @@ void sub_events(void *p) __toplevel{ // note most of this setup is taken care of
         for(i=0;i<COMM_TXHEADER_LEN;i++){                                             //LOAD UP HEADER
           Tx1Buffer[i]=__bit_reverse_char(Tx1_Header[i]);                             //AX.25 octets are sent LSB first
         }
-i
+
         if(!beacon_flag){                                                            //SEND HELLO MESSAGE
           Tx1Buffer_Len=COMM_TXHEADER_LEN+sizeof(Hello)+1;                            //Set length of message
           for(i=0;i<sizeof(Hello);i++){                 
@@ -447,7 +448,7 @@ void PrintBufferBitInv(char *dat, unsigned int len){
     printf("\r\n");
     printf("\r\n");
 }
-//************************************************************** radio IR ****************************************************************************************
+//************************************************************** radio IR code****************************************************************************************
 void Radio_Interrupt_Setup(void){ // Enable RX interrupts only!  TX interrupt enabled in TX Start
   // Use GDO0 and GDO2 as interrupts to control TX/RX of radio
   P1DIR = 0;			        // Port 1 configured as inputs (i.e. GDO0 and GDO2 are inputs)
@@ -533,4 +534,35 @@ void Port1_ISR (void) __ctl_interrupt[PORT1_VECTOR]{
         break; 
         }
 }
+
+void COMM_timer_setup(void){
+  //enable 10 sec interrupt
+  TA0CTL|=TAIE;
+}
+
+//================[Time Tick interrupt]=========================
+void task_tick(void) __ctl_interrupt[TIMER0_A1_VECTOR]{
+  static int sec=0;
+  switch(TA0IV){
+    case TA0IV_TACCR1:
+    break;
+
+    case TA0IV_TACCR2:
+    break;
+
+    case TA0IV_TAIFG:
+ //     ctl_events_set_clear(&cmd_parse_evt,CMD_PARSE_GET_STAT,0);
+      P7OUT^=BIT7; //toggle bit 7
+
+      if(sec>=10){  // reset counter for beacon @ 10 seconds
+        P7OUT^=BIT5; //toggle bit 5
+        sec=0;
+      }
+    break;
+    default:
+    break;
+  }
+}
+
+
 
