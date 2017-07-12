@@ -105,6 +105,7 @@ return 0;
 // streams data from radio argv[1]=ADR 
 //TODO   (update for second radio)
 int streamCmd(char **argv,unsigned short argc){
+
 // input checking 
   if(!strcmp(argv[1],"value")){
     data_mode=TX_DATA_PATTERN;
@@ -207,7 +208,8 @@ int radio_resetCmd(char **argv,unsigned short argc){
   return 0;
 }
 
-int beaconCmd(char **argv,unsigned short argc){
+// beacon_on COMM's beacon arbiter var 1 = send 
+int beacon_onCmd(char **argv,unsigned short argc){
   if(argc>1){
     printf("Error : Too many arguments\r\n");
     return -1;
@@ -215,7 +217,6 @@ int beaconCmd(char **argv,unsigned short argc){
   if(argc==1){
     if(!strcmp(argv[1],"on")){
       beacon_on=1;
-      ctl_events_set_clear(&SUB_events,SUB_EV_SPI_DAT,0); 
     }else if(!strcmp(argv[1],"off")){
       beacon_on=0;
     }else{
@@ -227,13 +228,29 @@ int beaconCmd(char **argv,unsigned short argc){
   return 0;
 }
 
-int TestCmd(char **argv,unsigned short argc){
-  for(;;){
-   // COMM_Send_Data(argv[1]);// send sum data. WORKS!
+// sets COMM's beacon_flag "hello" beacon var 1 = beacon("hello")
+int beacon_flagCmd(char **argv,unsigned short argc){
+  if(argc>1){
+    printf("Error : Too many arguments\r\n");
+    return -1;
   }
-
-return 0;
+  if(argc==1){
+    if(!strcmp(argv[1],"on")){
+      beacon_flag=1;
+    }else if(!strcmp(argv[1],"off")){
+      beacon_flag=0;
+    }else{
+      printf("Error : Unknown argument \"%s\"\r\n",argv[1]);
+      return -2;
+    }
+  }
+  printf("Beacon_flag : %s\r\n",beacon_flag?"on":"off");
+  return 0;
 }
+
+int TestCmd(char **argv,unsigned short argc){
+      return 0;
+  }
 
 //table of commands with help
 const CMD_SPEC cmd_tbl[]={{"help"," [command]",helpCmd},
@@ -243,7 +260,8 @@ const CMD_SPEC cmd_tbl[]={{"help"," [command]",helpCmd},
                    {"readreg","reads data from a radio register\r\n [radio] [adrss].\n\r",readReg},
                    {"power","Changes the transmit power of the radio [radio][power].\n\rex. CC2500_1 -24\n\r",powerCmd},
                    {"radio_reset","Reset radios on COMM SPI bus.\n\rradio_reset [radio]. Note if no radio addr included all radios will be reset",radio_resetCmd},
-                   {"beacon","Toggles the COMM beacon on or off.\n\rCurrently targeting the CC2500_1",beaconCmd},
+                   {"beacon_on","Toggles the COMM beacon on or off.\n\rCurrently targeting the CC2500_1",beacon_onCmd},
+                   {"beacon_flag","Toggles the COMM beacon \"hello\" packet on or off.\n\rCurrently targeting the CC2500_1",beacon_flagCmd},
                    {"test","for testing things in code",TestCmd},
                    ARC_COMMANDS,CTL_COMMANDS,// ERROR_COMMANDS
                    //end of list

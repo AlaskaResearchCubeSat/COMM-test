@@ -14,6 +14,7 @@
 // Predefined test packets
   extern const char Packet_NoBit[19];
   extern const char Packet_WBit[28];
+  extern const char Packet_Wbitshort[12];
   extern const char Packet_test[28];
 
 // 

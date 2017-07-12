@@ -48,7 +48,7 @@ extern short beacon_on, beacon_flag;
    void COMM_events(void *p);
   
   // beacon timer setup
-  void COMM_timer_setup(void);
+  void COMM_beacon_setup(void);
 
   void Radio_Interrupt_Setup(void);
   void PrintBuffer(char *dat, unsigned int len);
